@@ -25,7 +25,7 @@ def process_image(image_path):
 
 
 # Directory containing subfolders of images for each person
-base_dir = 'path_to_your_base_directory'
+base_dir = './faces_dataset'
 
 # Dictionary to store mean embeddings for each person
 known_faces = {}
