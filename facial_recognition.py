@@ -1,38 +1,51 @@
 import cv2
-from facenet_pytorch import MTCNN
+from facenet_pytorch import MTCNN, InceptionResnetV1
+import torch
 
-# Create a face detection pipeline using MTCNN:
+# Load the models
 mtcnn = MTCNN()
+resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
-# Open a connection to the webcam:
+# Load the known faces
+known_faces = torch.load('known_faces.pt')
+
+# Function to calculate face embeddings
+def get_face_embedding(face):
+    return resnet(face.unsqueeze(0))
+
+# Open a connection to the webcam
 cap = cv2.VideoCapture(0)
 
+#ADD THRESHHOLD
+
 while True:
-    # Read a frame from the webcam:
     ret, frame = cap.read()
-
-    # If a frame was successfully read:
     if ret:
-        # Detect faces in the frame:
-        boxes, _ = mtcnn.detect(frame)
-
-        # If at least one face was detected:
+        boxes, faces = mtcnn.detect(frame, landmarks=False)
         if boxes is not None:
-            # Draw a rectangle around each face:
-            for box in boxes:
+            for box, face in zip(boxes, faces):
                 x1, y1, x2, y2 = [int(coord) for coord in box]
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
 
-        # Display the frame with bounding boxes:
+                face_tensor = torch.tensor(face).permute(2, 0, 1).unsqueeze(0).float()
+                embedding = get_face_embedding(face_tensor)
+                
+                min_dist = float('inf')
+                identity = None
+                for name, known_embedding in known_faces.items():
+                    dist = torch.dist(embedding, known_embedding).item()
+                    if dist < min_dist:
+                        min_dist = dist
+                        identity = name
+                
+                if identity is not None:
+                    cv2.putText(frame, identity, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        
         cv2.imshow('Video', frame)
-
-        # If the 'q' key is pressed, break the loop:
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     else:
         break
 
-# Release the webcam and destroy all windows:
 cap.release()
 cv2.destroyAllWindows()
-
