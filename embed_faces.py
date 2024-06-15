@@ -12,13 +12,19 @@ resnet = InceptionResnetV1(pretrained='vggface2').eval()
 def process_image(image_path):
     try:
         img = Image.open(image_path)  # Open the image
-        img_cropped = mtcnn(img)  # Detect and crop the face
-        if img_cropped is not None:
-            embedding = resnet(img_cropped.unsqueeze(0))  # Get the embedding of the cropped face
-            return embedding
-        else:
-            print(f"No face detected in {image_path}")  # Print a message if no face is detected
+        boxes, _ = mtcnn.detect(img)
+        if boxes is None or len(boxes) != 1:
+            os.remove(image_path)
+            print(f'no face or multiple faces, image deleted: {image_path}')
             return None
+        else:
+            img_cropped = mtcnn(img)  # Detect and crop the face
+            if img_cropped is not None:
+                embedding = resnet(img_cropped.unsqueeze(0))  # Get the embedding of the cropped face
+                return embedding
+            else:
+                print(f"No face detected in {image_path}")  # Print a message if no face is detected
+                return None
     except Exception as e:
         print(f"Error processing {image_path}: {e}")
         return None
