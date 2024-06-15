@@ -25,7 +25,7 @@ def process_image(image_path):
 
 
 # Directory containing subfolders of images for each person
-base_dir = './faces_dataset'
+base_dir = 'C:/Users/dahpa/test/Aves-Camera-Recognition/faces_dataset'
 
 # Dictionary to store mean embeddings for each person
 known_faces = {}
@@ -46,8 +46,6 @@ for person_name in os.listdir(base_dir):
             embeddings = torch.cat(embeddings)
             mean_embedding = embeddings.mean(dim=0)
             known_faces[person_name] = mean_embedding
-            # Save the mean embedding to a file (optional)
-            torch.save(mean_embedding, f'{person_name}_embedding.pt')
 
 # Save the known_faces dictionary
 torch.save(known_faces, 'known_faces.pt')
