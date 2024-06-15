@@ -1,1 +1,0 @@
-{"errors":["width must be a `number` type, but the final value was: `NaN` (cast from the value `\"\"`)."]}
