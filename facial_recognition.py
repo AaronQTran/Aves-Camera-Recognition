@@ -28,7 +28,7 @@ threshold = 0.95
 while True:
     ret, frame = cap.read()
     if ret:
-        # Detect faces in the frame
+        # Detect faces in the frame, boxes is a tuple, so like ({x1 ,y1, x2, y2}, etc etc)
         boxes, probs = mtcnn.detect(frame, landmarks=False)
         if boxes is not None and len(boxes) > 0:
             for box in boxes:
