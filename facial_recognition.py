@@ -4,7 +4,6 @@ import torch
 from PIL import Image
 import numpy as np
 
-# Determine the device to use
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
 
@@ -12,18 +11,14 @@ print(f"Using device: {device}")
 mtcnn = MTCNN(image_size=160, margin=20, keep_all=True, device=device)  # Increased margin
 resnet = InceptionResnetV1(pretrained='vggface2').eval().to(device)
 
-# Load the known faces
 known_faces = torch.load('known_faces.pt')
 
-# Function to calculate face embeddings
 def get_face_embedding(face):
     return resnet(face.to(device)).detach()
 
-# Open a connection to the webcam
 cap = cv2.VideoCapture(0)
 
-# Define a threshold
-threshold = 0.95
+threshold = 0.78
 
 while True:
     ret, frame = cap.read()
@@ -80,7 +75,6 @@ while True:
         else:
             print("No boxes detected.")
             cv2.putText(frame, 'No face detected', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
         cv2.imshow('Video', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
