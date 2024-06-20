@@ -9,7 +9,7 @@ dir = './faces_dataset/Aaron'
 
 cap = cv2.VideoCapture(0)
 frame_count = 0
-save_every_n_frames = 5  
+save_every_n_frames = 10 
 
 while True:
     ret, frame = cap.read()
@@ -18,8 +18,9 @@ while True:
             frame_path = os.path.join(dir, f'frame_{frame_count}.jpg')
             cv2.imwrite(frame_path, frame)
         frame_count += 1
+        cv2.imshow('Frame', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        print('q')
+        print('brake')
         break
 
 cap.release()
