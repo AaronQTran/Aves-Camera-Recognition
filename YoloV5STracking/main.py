@@ -8,7 +8,7 @@ import numpy as np
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
 # Open Video Capture of CCTV for Testing
-cap = cv2.VideoCapture("Aves-Camera-Recognition\YoloV5STracking\cctv.mp4")
+cap = cv2.VideoCapture("cctv.mp4")
 
 # Function to Show X & Y Coordinates of Mouse Cursor
 def POINTS(event, x, y, flags, param):
