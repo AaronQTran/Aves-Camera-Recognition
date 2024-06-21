@@ -1,7 +1,7 @@
 # Import Libraries
 import cv2
 import torch
-from tracker import *
+from .tracker import *
 import numpy as np
 
 # Load Pre-Trained YoloV5 Model
@@ -9,6 +9,7 @@ model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
 # Tracking Module for YoloV5
 def detectBody(frame):
+    box_id = None
     tracker = Tracker()
     # Inference
     results = model(frame)

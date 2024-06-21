@@ -4,7 +4,7 @@ import torch
 from PIL import Image
 import numpy as np
 from facial_recognition import recognize_faces
-from body import detectBody
+from YoloV5STracking.body import detectBody
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
