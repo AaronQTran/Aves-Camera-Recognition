@@ -4,6 +4,8 @@ import torch
 from PIL import Image
 import numpy as np
 from facial_recognition import recognize_faces
+from YoloV5STracking.body import detectBody
+
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
@@ -19,8 +21,11 @@ cap = cv2.VideoCapture(0)
 
 while True:
     ret, frame = cap.read()
-    recognize_faces(frame)
+
+    detectBody(frame)
+
     cv2.imshow('Video', frame)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

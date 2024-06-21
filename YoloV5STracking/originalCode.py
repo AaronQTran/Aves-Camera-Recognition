@@ -7,9 +7,30 @@ import numpy as np
 # Load Pre-Trained YoloV5 Model
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
+# Open Video Capture of CCTV for Testing
+cap = cv2.VideoCapture("cctv.mp4")
+
+# Function to Show X & Y Coordinates of Mouse Cursor
+def POINTS(event, x, y, flags, param):
+    if event == cv2.EVENT_MOUSEMOVE :  
+        colorsBGR = [x, y]
+        print(colorsBGR)
+        
+# Opens Frame - Autosize to Avoid cv2 GUI Error
+cv2.namedWindow("FRAME", cv2.WINDOW_AUTOSIZE)
+# Calls Mouse Events to POINTS Function Works
+cv2.setMouseCallback("FRAME", POINTS)
+
 # Tracking Module for YoloV5
-def detectBody(frame):
-    tracker = Tracker()
+tracker = Tracker()
+while True:
+    ret, frame = cap.read()
+
+    if not ret:
+        print("Error: Failed to capture frame")
+        break
+    
+    frame = cv2.resize(frame, (1020, 500))
     # Inference
     results = model(frame)
     # Pandas Displays Data within Results
@@ -44,6 +65,13 @@ def detectBody(frame):
         cv2.rectangle(frame, (x,y), (w,h), (0,0,255), 2)
         # Frame, ID, Coordinates, Font, Font Size, Color, Thickness
         cv2.putText(frame, str(id), (x,y), cv2.FONT_HERSHEY_PLAIN, 1, (255,0,0), 2)
-        print(box_id)
-    return box_id
-        
+
+    cv2.imshow('FRAME', frame)
+    
+    # Wait for Esc key to exit
+    # Replace 1 with 0 to Freeze Frame
+    if cv2.waitKey(1) & 0xFF == 27:
+        break
+
+cap.release()
+cv2.destroyAllWindows()
