@@ -1,4 +1,3 @@
-# Import Libraries
 import cv2
 import torch
 from .tracker import *
@@ -9,42 +8,38 @@ model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
 # Tracking Module for YoloV5
 def detectBody(frame):
-    box_id = None
     tracker = Tracker()
     # Inference
     results = model(frame)
     # Pandas Displays Data within Results
     # Classes, X & Y Coordinates, Name, etc.
     a = results.pandas().xyxy[0]
-    # print(a) - Test to View Data
 
-    list=[]
+    boxes_list = []
     for index, row in a.iterrows():
         # X/Y Coordinates within Pandas Data
-        x1=int(row['xmin'])
-        y1=int(row['ymin'])
-        x2=int(row['xmax'])
-        y2=int(row['ymax'])
-        b=str(row['name'])
-        if 'person' in b:
-        # Frame, Coordinates, Color, Thickness
-        # cv2.rectangle(frame, (x1, y1), (x2, y2), (255,0,255), 2)
-        # Frame, Coordinates, Font, Font Size, Color, Thickness
-        # cv2.putText(frame, b, (x1, y1), cv2.FONT_HERSHEY_PLAIN, 1, (0,0,255), 2)
+        x1 = int(row['xmin'])
+        y1 = int(row['ymin'])
+        x2 = int(row['xmax'])
+        y2 = int(row['ymax'])
+        name = str(row['name'])
+        if 'person' in name:
+            # Creating List of Coordinates for Updated System
+            boxes_list.append([x1, y1, x2, y2])
 
-        # Creating List of Coordinates for Updated System
-            list.append([x1,y1,x2,y2])
-
-    # Create ID's with Tracker
-    boxes_ids=tracker.update(list)
+    # Create IDs with Tracker
+    boxes_ids = tracker.update(boxes_list)
+    result = []
     for box_id in boxes_ids:
         # Parameters for Drawing Box
         # X, Y, Width, Height, ID
-        x,y,w,h,id=box_id
+        x1, y1, x2, y2, id = box_id
         # X, Y, Width, Height, Color, Thickness
-        cv2.rectangle(frame, (x,y), (w,h), (0,0,255), 2)
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
         # Frame, ID, Coordinates, Font, Font Size, Color, Thickness
-        cv2.putText(frame, str(id), (x,y), cv2.FONT_HERSHEY_PLAIN, 1, (255,0,0), 2)
-        print(box_id)
-    return box_id
+        cv2.putText(frame, str(id), (x1, y1), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
+        result.append((x1, y1, x2, y2, id))
+        print(result)
+
+    return result
         
