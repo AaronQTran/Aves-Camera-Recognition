@@ -9,7 +9,7 @@ dir = './faces_dataset/Aaron'
 
 cap = cv2.VideoCapture(0)
 frame_count = 0
-save_every_n_frames = 10 
+save_every_n_frames = 5
 
 while True:
     ret, frame = cap.read()

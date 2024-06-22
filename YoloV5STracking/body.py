@@ -38,7 +38,8 @@ def detectBody(frame):
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
         # Frame, ID, Coordinates, Font, Font Size, Color, Thickness
         cv2.putText(frame, str(id), (x1, y1), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
-        result.append((x1, y1, x2, y2, id))
+        body_face = None
+        result.append((x1, y1, x2, y2, id, body_face))
         print(result)
 
     return result
