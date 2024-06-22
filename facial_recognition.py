@@ -16,7 +16,7 @@ known_faces = torch.load('known_faces.pt') #given a frame, make a func that retu
 def get_face_embedding(face):
     return resnet(face.to(device)).detach()
 
-def recognize_faces(frame, threshold=0.78):
+def recognize_faces(frame, threshold=0.8):
     identities = []
     boxes, probs = mtcnn.detect(frame, landmarks=False)
     if boxes is not None and len(boxes) > 0:
