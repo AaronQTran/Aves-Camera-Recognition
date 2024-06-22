@@ -40,7 +40,7 @@ def detectBody(frame):
         cv2.putText(frame, str(id), (x1, y1), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
         body_face = None
         result.append((x1, y1, x2, y2, id, body_face))
-        print(result)
+        #print(result)
 
     return result
         

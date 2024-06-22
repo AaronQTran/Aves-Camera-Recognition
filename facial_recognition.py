@@ -16,7 +16,7 @@ known_faces = torch.load('known_faces.pt') #given a frame, make a func that retu
 def get_face_embedding(face):
     return resnet(face.to(device)).detach()
 
-def recognize_faces(frame, threshold=0.8):
+def recognize_faces(frame, threshold=0.833):
     identities = []
     boxes, probs = mtcnn.detect(frame, landmarks=False)
     if boxes is not None and len(boxes) > 0:
@@ -57,8 +57,7 @@ def recognize_faces(frame, threshold=0.8):
 
                 if min_dist < threshold and identity is not None:
                     identities.append((identity, (x1,y1,x2,y2)))
-                    print(f"Identified as {identity} with distance {min_dist}")
-                    print(identities)
+                    #print(f"Identified as {identity} with distance {min_dist}")
                 else:
                     identities.append(('unknown', (x1,y1,x2,y2)))
                     print(f"Face not recognized, minimum distance {min_dist}")

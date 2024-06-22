@@ -5,10 +5,11 @@ import torch
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
 
+#if ur folder already has images set frame_count 1 greater than the frame image number
 dir = './faces_dataset/Aaron'
 
 cap = cv2.VideoCapture(0)
-frame_count = 0
+frame_count = 5736
 save_every_n_frames = 5
 
 while True:

@@ -52,6 +52,7 @@ while True:
                 break
         body_face = body_faces[body_id]
         body_results[i] = (bx1, by1, bx2, by2, body_id, body_face)
+        print(body_results[i])
         #update body result with the associated face
 
     for identity, (fx1, fy1, fx2, fy2) in face_results:
