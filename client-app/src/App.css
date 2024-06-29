@@ -54,6 +54,30 @@
 }
 
 .gradient-background {
-  background: linear-gradient(to right, #954aff 0%, #181a1b 55%, #181a1b 100%);
+  background: linear-gradient(to right, #954aff 10%, #431e4e 50%, #181a1b 90%);
 }
 
+/* Reset the margin and padding for body and html */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* Ensure the root div takes the full height */
+#root {
+  height: 100%;
+}
+
+/* Add distinct background colors for debugging */
+body {
+  background-color: red; /* For debugging */
+}
+
+#root {
+  background-color: blue; /* For debugging */
+}
+
+.splash-screen {
+  background-color: yellow; /* For debugging */
+}
