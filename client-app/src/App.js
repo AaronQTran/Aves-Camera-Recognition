@@ -1,25 +1,41 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import { useCookies } from 'react-cookie';
+import { Routes, Route } from 'react-router-dom';
 
-function App() {
+const Main = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="bg-gray-900 w-screen h-screen flex flex-row">
+      {showSplash && (
+        <div className="splash-screen absolute inset-0 flex items-center justify-center z-50 gradient-background">
+          <h1 className="text-white text-4xl">Aves Attendance</h1>
+        </div>
+      )}
+      <div className="w-1/4 h-full border-r border-white-200">
+        <h1>hi</h1>
+      </div>
+      <div className="w-1/4 h-full border-r border-white-200">
+        <h1>hi</h1>
+      </div>
+      <div className="w-1/4 h-full border-r border-white-200">
+        <h1>hi</h1>
+      </div>
+      <div className="w-1/4 h-full">
+        <h1>hi</h1>
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default Main;
+

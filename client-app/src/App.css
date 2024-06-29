@@ -36,3 +36,24 @@
     transform: rotate(360deg);
   }
 }
+
+/* slide up*/
+.splash-screen {
+  animation: slideUp 1.5s forwards;
+  z-index: 1000;
+  animation-delay: 1.45s;
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.gradient-background {
+  background: linear-gradient(to right, #954aff 0%, #181a1b 50%, #181a1b 100%);
+}
+
