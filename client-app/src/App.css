@@ -57,27 +57,59 @@
   background: linear-gradient(to right, #954aff 10%, #431e4e 50%, #181a1b 90%);
 }
 
-/* Reset the margin and padding for body and html */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
-/* Ensure the root div takes the full height */
 #root {
   height: 100%;
 }
 
-/* Add distinct background colors for debugging */
 body {
-  background-color: red; /* For debugging */
+  background-color: red; 
 }
 
 #root {
-  background-color: blue; /* For debugging */
+  background-color: blue; 
 }
 
 .splash-screen {
-  background-color: yellow; /* For debugging */
+  background-color: yellow; 
 }
+
+.statistic-container {
+  text-align: center;
+}
+
+.big-number {
+  font-size: 2em;
+  font-weight: bold;
+  color: white;
+}
+
+.small-description {
+  font-size: 0.8em;
+  color: white;
+}
+
+.rainbow-gradient {
+  @apply border-0 h-4 w-9/12 mx-auto;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 7s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+

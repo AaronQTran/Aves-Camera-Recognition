@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import { useCookies } from 'react-cookie';
-import { Routes, Route } from 'react-router-dom';
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import './App.css';
 import { Chart, registerables } from 'chart.js';
-import { Line } from 'react-chartjs-2';
 Chart.register(...registerables);
+
+const Statistic = ({ label, value }) => (
+  <div className="text-center mb-2">
+    <h2 className="text-white text-4xl font-bold">{value}</h2>
+    <hr className="rainbow-gradient" />
+    <p className="text-white text-sm">{label}</p>
+  </div>
+);
+
 
 const Main = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -25,26 +31,68 @@ const Main = () => {
       {
         label: '# of Times Leaving',
         data: [12, 19, 3, 5, 2, 3, 7], //fake data
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
+        fill: true, 
+        backgroundColor: 'rgba(0, 128, 128, 0.2)', 
+        pointBackgroundColor: 'white',
+        pointBorderColor: 'white',
+        borderColor: 'purple',
+        tension: 0.3
       },
-      {
-        label: '# of Times Returning',
-        data: [7, 3, 2, 5, 3, 19, 12], //fake data
-        fill: false,
-        borderColor: 'rgb(192, 75, 192)',
-        tension: 0.1
-      }
     ],
   };
-  
+
   const options = {
     scales: {
       y: {
         beginAtZero: true,
+        grid: {
+          color: 'gray', 
+        },
+      },
+      x: {
+        grid: {
+          color: 'gray', 
+        },
       },
     },
+    plugins: {
+      legend: {
+        labels: {
+          color: 'white', 
+          font: {
+            size: 13, 
+            family: 'Arial' 
+          }
+        }
+      }
+    },
+  };
+
+  const statistics = {
+    Andrew: {
+      avgTimesLeft: 5,
+      lastTimeEntered: '8:00 AM',
+      lastTimeExited: '5:00 PM',
+      avgTimeAway: '1h 30m'
+    },
+    Kamryn: {
+      avgTimesLeft: 4,
+      lastTimeEntered: '8:30 AM',
+      lastTimeExited: '5:15 PM',
+      avgTimeAway: '1h 15m'
+    },
+    Jordan: {
+      avgTimesLeft: 6,
+      lastTimeEntered: '9:00 AM',
+      lastTimeExited: '5:45 PM',
+      avgTimeAway: '2h'
+    },
+    Nick: {
+      avgTimesLeft: 3,
+      lastTimeEntered: '7:45 AM',
+      lastTimeExited: '4:30 PM',
+      avgTimeAway: '1h'
+    }
   };
 
   return (
@@ -56,39 +104,63 @@ const Main = () => {
         </div>
       )}
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
-        <h1 className = "font-medium text-red-500 font-custom text-4xl">Andrew</h1>
+        <h1 className="font-medium text-red-500 font-custom text-4xl">Andrew</h1>
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Andrew" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
           <Line data={data} options={options} />
         </div>
+        <div className="w-5/6 mt-2 text-white grid grid-cols-2 gap-4">
+          <Statistic label="Avg Times Left/day" value={statistics.Andrew.avgTimesLeft} />
+          <Statistic label="Last Time Entered" value={statistics.Andrew.lastTimeEntered} />
+          <Statistic label="Last Time Exited" value={statistics.Andrew.lastTimeExited} />
+          <Statistic label="Average Time Away/day" value={statistics.Andrew.avgTimeAway} />
+        </div>
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
-        <h1 className = "font-medium text-green-500 font-custom text-4xl">Kamryn</h1>
+        <h1 className="font-medium text-green-500 font-custom text-4xl">Kamryn</h1>
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Kamryn" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
           <Line data={data} options={options} />
         </div>
+        <div className="w-5/6 mt-2 text-white grid grid-cols-2 gap-4">
+          <Statistic label="Avg Times Left/day" value={statistics.Kamryn.avgTimesLeft} />
+          <Statistic label="Last Time Entered" value={statistics.Kamryn.lastTimeEntered} />
+          <Statistic label="Last Time Exited" value={statistics.Kamryn.lastTimeExited} />
+          <Statistic label="Average Time Away/day" value={statistics.Kamryn.avgTimeAway} />
+        </div>
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
-        <h1 className = "text-white font-medium font-custom text-4xl">Jordan</h1>
+        <h1 className="text-white font-medium font-custom text-4xl">Jordan</h1>
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Jordan" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
           <Line data={data} options={options} />
         </div>
+        <div className="w-5/6 mt-2 text-white grid grid-cols-2 gap-4">
+          <Statistic label="Avg Times Left/day" value={statistics.Jordan.avgTimesLeft} />
+          <Statistic label="Last Time Entered" value={statistics.Jordan.lastTimeEntered} />
+          <Statistic label="Last Time Exited" value={statistics.Jordan.lastTimeExited} />
+          <Statistic label="Average Time Away/day" value={statistics.Jordan.avgTimeAway} />
+        </div>
       </div>
       <div className="md:w-1/4 w-full flex flex-col items-center">
-        <h1 className = "text-white font-medium font-custom text-4xl">Nick</h1>
+        <h1 className="text-white font-medium font-custom text-4xl">Nick</h1>
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Nick" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
           <Line data={data} options={options} />
+        </div>
+        <div className="w-5/6 mt-2 text-white grid grid-cols-2 gap-4">
+          <Statistic label="Avg Times Left/day" value={statistics.Nick.avgTimesLeft} />
+          <Statistic label="Last Time Entered" value={statistics.Nick.lastTimeEntered} />
+          <Statistic label="Last Time Exited" value={statistics.Nick.lastTimeExited} />
+          <Statistic label="Average Time Away/day" value={statistics.Nick.avgTimeAway} />
         </div>
       </div>
     </div>
