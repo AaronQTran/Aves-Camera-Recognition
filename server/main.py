@@ -18,6 +18,11 @@ face_results = []
 body_results = []
 body_faces = {}  # Maps body_id to body_face
 
+# Temporary Status
+roomStatus = {
+    "kamryn" : "Inside"
+}
+
 def process_faces(frame):
     global face_results
     face_results = recognize_faces(frame)
@@ -64,6 +69,44 @@ while True:
         cv2.rectangle(frame, (bx1, by1), (bx2, by2), (0, 255, 0), 2)
         cv2.putText(frame, str(body_id) + ' ' + str(body_face), (bx1, by1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
+    # Detection if Tracked Person is Within Door Border
+    # Not Implemented, but Placeholder for Door Coordinates System?
+    
+    # Find Area of Door Box
+    # When Coordinates Implemented
+    # doorCoordinates = [x1, y1, x2, y2]
+    doorCoordinates = [0, 0, 0, 0]
+    doorHeight = 0
+    doorWidth = 0
+    doorArea = doorHeight * doorWidth
+    
+    # Find Area of Persons Box
+    # body_reuslts = x1, y1, x2, y2, id, body_face
+    # personHeight is y2 (Y Max) - y1 (Y Min)
+    personHeight = body_thread[3] - body_thread[1]
+    # personWidth is x2 (X Max) - x1 (X Man)
+    personWidth = body_thread[2] - body_thread[0]
+    # personArea =s Height * Width (L*W)
+    personArea = personHeight * personWidth
+    
+    # Check if Persons X Values are Within Doors X Values+1
+    # Check if Area of Persons Box is Equal to or Less Than the Doors Area
+    # body_reuslts = x1, y1, x2, y2, id, body_face
+    if (doorCoordinates[0] <= body_thread[0] <= doorCoordinates[2] and personArea <= doorArea):
+        # Person is Within Door - Detected as Entering/Leaving
+        # If Detected, Swap their Status to Opposite
+        # (Inside Prior is now Outside)
+        # (Outside Prior is now Inside)
+        if (roomStatus["label"] == "Inside"):
+            roomStatus["label"] == "Outside"
+        elif (roomStatus["label"] == "Outside"):
+            roomStatus["label"] == "Inside"
+
+        # Send Status to Web Server
+        # Not Implemented
+        
+
+    # Camera Display w/ Facial Tracking and Body Tracking
     cv2.imshow('Video', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
