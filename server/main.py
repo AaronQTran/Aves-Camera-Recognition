@@ -4,6 +4,7 @@ import torch
 from facenet_pytorch import MTCNN, InceptionResnetV1
 from facial_recognition import recognize_faces
 from YoloV5STracking.body import detectBody
+import json
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
@@ -18,10 +19,9 @@ face_results = []
 body_results = []
 body_faces = {}  # Maps body_id to body_face
 
-# Temporary Status
-roomStatus = {
-    "kamryn" : "Inside"
-}
+# Rooommate Status w/ JSON
+with open("roommateData.json") as json_file:
+    data = json.load(json_file)
 
 def process_faces(frame):
     global face_results
@@ -95,16 +95,21 @@ while True:
     if (doorCoordinates[0] <= body_thread[0] <= doorCoordinates[2] and personArea <= doorArea):
         # Person is Within Door - Detected as Entering/Leaving
         # If Detected, Swap their Status to Opposite
-        # (Inside Prior is now Outside)
-        # (Outside Prior is now Inside)
-        if (roomStatus["label"] == "Inside"):
-            roomStatus["label"] == "Outside"
-        elif (roomStatus["label"] == "Outside"):
-            roomStatus["label"] == "Inside"
+        # Iterate Through Data Sheet
+        # Compare Name to Name Found
+        for roommate in data(["roommateInfo"]):
+            if (roommate["name"] == body_face):
+                if (roommate["status"] == "Inside"):
+                    roommate["status"] = "Outside"
+                else:
+                    roommate["status"] = "Inside"
 
         # Send Status to Web Server
         # Not Implemented
-        
+    
+    # Save Updated Info to JSON File
+    with open("roommateData.json", "w") as json_file:
+        json.dump(data, json_file, indent=4)
 
     # Camera Display w/ Facial Tracking and Body Tracking
     cv2.imshow('Video', frame)
