@@ -96,7 +96,7 @@ const Main = () => {
   };
 
   return (
-    <div className="bg-gray-950 w-screen min-h-screen flex flex-col md:flex-row">
+    <div className="bg-gray-900 w-screen min-h-screen flex flex-col md:flex-row">
       {showSplash && (
         <div className="splash-screen absolute inset-0 flex items-center justify-center z-50 gradient-background">
           <h1 className="text-white font-medium text-4xl">Aves Attendance</h1>
@@ -117,6 +117,7 @@ const Main = () => {
           <Statistic label="Last Time Exited" value={statistics.Andrew.lastTimeExited} />
           <Statistic label="Average Time Away/day" value={statistics.Andrew.avgTimeAway} />
         </div>
+        <button class="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix </button>
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
         <h1 className="font-medium text-green-500 font-custom text-4xl">Kamryn</h1>
@@ -132,6 +133,7 @@ const Main = () => {
           <Statistic label="Last Time Exited" value={statistics.Kamryn.lastTimeExited} />
           <Statistic label="Average Time Away/day" value={statistics.Kamryn.avgTimeAway} />
         </div>
+        <button class="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix </button>
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
         <h1 className="text-white font-medium font-custom text-4xl">Jordan</h1>
@@ -147,6 +149,7 @@ const Main = () => {
           <Statistic label="Last Time Exited" value={statistics.Jordan.lastTimeExited} />
           <Statistic label="Average Time Away/day" value={statistics.Jordan.avgTimeAway} />
         </div>
+        <button class="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix </button>
       </div>
       <div className="md:w-1/4 w-full flex flex-col items-center">
         <h1 className="text-white font-medium font-custom text-4xl">Nick</h1>
@@ -162,6 +165,7 @@ const Main = () => {
           <Statistic label="Last Time Exited" value={statistics.Nick.lastTimeExited} />
           <Statistic label="Average Time Away/day" value={statistics.Nick.avgTimeAway} />
         </div>
+        <button class="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix </button>
       </div>
     </div>
   );
