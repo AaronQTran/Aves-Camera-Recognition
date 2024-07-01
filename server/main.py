@@ -106,6 +106,7 @@ while True:
 
         # Send Status to Web Server
         # Not Implemented
+        #############################################################################################
     
     # Save Updated Info to JSON File
     with open("roommateData.json", "w") as json_file:
