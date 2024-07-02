@@ -128,7 +128,7 @@ const Main = () => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, status: newStatus }),
+        body: JSON.stringify({ name, status: newStatus }), //body = parameters/data sent to the api
     })
     .then(response => response.json())
     .then(data => {

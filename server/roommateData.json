@@ -1,7 +1,11 @@
 {
     "roommateInfo": [
         {
-            "name" : "Kamryn",
+            "name" : "Andrew",
+            "status" : "Inside"
+        },
+        {
+            "name" : "Kamryn", 
             "status" : "Inside"
         },
         {
@@ -10,10 +14,6 @@
         },
         {
             "name" : "Nick",
-            "status" : "Inside"
-        },
-        {
-            "name" : "Kamryn",
             "status" : "Inside"
         }
     ]

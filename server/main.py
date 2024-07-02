@@ -19,9 +19,8 @@ face_results = []
 body_results = []
 body_faces = {}  # Maps body_id to body_face
 
-# Rooommate Status w/ JSON
-with open("roommateData.json") as json_file:
-    data = json.load(json_file)
+# Lock for JSON file access
+json_lock = threading.Lock()
 
 def process_faces(frame):
     global face_results
@@ -58,7 +57,7 @@ while True:
         body_face = body_faces[body_id]
         body_results[i] = (bx1, by1, bx2, by2, body_id, body_face)
         print(body_results[i])
-        #update body result with the associated face
+        # update body result with the associated face
 
     for identity, (fx1, fy1, fx2, fy2) in face_results:
         label = identity
@@ -86,6 +85,8 @@ while True:
     
     # Find Area of Persons Box
     for (bx1, by1, bx2, by2, body_id, body_face) in body_results:
+        if body_face == 'unknown':
+            continue
         personHeight = by2 - by1
         personWidth = bx2 - bx1
         personArea = personHeight*personWidth
@@ -96,20 +97,21 @@ while True:
             # If Detected, Swap their Status to Opposite
             # Iterate Through Data Sheet
             # Compare Name to Name Found
-            for roommate in data(["roommateInfo"]):
-                if (roommate["name"] == body_face):
-                    if (roommate["status"] == "Inside"):
-                        roommate["status"] = "Outside"
-                    else:
-                        roommate["status"] = "Inside"
+            # Note WITH ALREADY CLOSES JSON FILE, with makes sure only 1 thread can read/write to json file in an instance/
+            with json_lock:  
+                with open("roommateData.json") as json_file:
+                    data = json.load(json_file)
 
-            # Send Status to Web Server
-            # Not Implemented
-            #############################################################################################
-    
-            # Save Updated Info to JSON File
-            with open("roommateData.json", "w") as json_file:
-                json.dump(data, json_file, indent=4)
+                for roommate in data["roommateInfo"]:
+                    if roommate["name"] == body_face:
+                        if roommate["status"] == "Inside":
+                            roommate["status"] = "Outside"
+                        else:
+                            roommate["status"] = "Inside"
+
+                # Save Updated Info to JSON File
+                with open("roommateData.json", "w") as json_file:
+                    json.dump(data, json_file, indent=4)
 
     # Camera Display w/ Facial Tracking and Body Tracking
     cv2.imshow('Video', frame)
@@ -117,6 +119,6 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-json_file.close()
 cap.release()
 cv2.destroyAllWindows()
+
