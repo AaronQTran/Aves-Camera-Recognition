@@ -16,6 +16,10 @@ const Statistic = ({ label, value }) => (
 
 const Main = () => {
   const [showSplash, setShowSplash] = useState(true);
+  const [andrewStatus, setAndrewStatus] = useState('Inside');
+  const [kamrynStatus, setKamrynStatus] = useState('Inside');
+  const [jordanStatus, setJordanStatus] = useState('Inside');
+  const [nickStatus, setNickStatus] = useState('Inside');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -94,6 +98,50 @@ const Main = () => {
       avgTimeAway: '1h'
     }
   };
+
+  const handleManualFix = (name) => {
+    //determine new status
+    let newStatus;
+    switch (name) {
+        case 'Andrew':
+            newStatus = andrewStatus === 'Inside' ? 'Outside' : 'Inside';
+            setAndrewStatus(newStatus);
+            break;
+        case 'Kamryn':
+            newStatus = kamrynStatus === 'Inside' ? 'Outside' : 'Inside';
+            setKamrynStatus(newStatus);
+            break;
+        case 'Jordan':
+            newStatus = jordanStatus === 'Inside' ? 'Outside' : 'Inside';
+            setJordanStatus(newStatus);
+            break;
+        case 'Nick':
+            newStatus = nickStatus === 'Inside' ? 'Outside' : 'Inside';
+            setNickStatus(newStatus);
+            break;
+        default:
+            return;
+    }
+
+    fetch('/api/manualFix', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, status: newStatus }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+};
+
+
+{/* <button onClick={() => handleManualFix('Andrew')} class="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix </button> */}
+
 
   return (
     <div className="bg-gray-900 w-screen min-h-screen flex flex-col md:flex-row">
