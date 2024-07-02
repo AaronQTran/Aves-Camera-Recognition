@@ -107,9 +107,9 @@ while True:
             # Not Implemented
             #############################################################################################
     
-    # Save Updated Info to JSON File
-    with open("roommateData.json", "w") as json_file:
-        json.dump(data, json_file, indent=4)
+            # Save Updated Info to JSON File
+            with open("roommateData.json", "w") as json_file:
+                json.dump(data, json_file, indent=4)
 
     # Camera Display w/ Facial Tracking and Body Tracking
     cv2.imshow('Video', frame)
@@ -117,5 +117,6 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
+json_file.close()
 cap.release()
 cv2.destroyAllWindows()
