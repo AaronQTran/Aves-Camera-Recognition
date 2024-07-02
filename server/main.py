@@ -72,41 +72,40 @@ while True:
     # Detection if Tracked Person is Within Door Border
     # Not Implemented, but Placeholder for Door Coordinates System?
     
+    # Timeout Threshold for Individuals
+    # In Seconds
+    timeOut = 30
+
     # Find Area of Door Box
     # When Coordinates Implemented
     # doorCoordinates = [x1, y1, x2, y2]
     doorCoordinates = [0, 0, 0, 0]
-    doorHeight = 0
-    doorWidth = 0
+    doorHeight = doorCoordinates[3] - doorCoordinates[1]
+    doorWidth = doorCoordinates[2] - doorCoordinates[0]
     doorArea = doorHeight * doorWidth
     
     # Find Area of Persons Box
-    # body_reuslts = x1, y1, x2, y2, id, body_face
-    # personHeight is y2 (Y Max) - y1 (Y Min)
-    personHeight = body_thread[3] - body_thread[1]
-    # personWidth is x2 (X Max) - x1 (X Man)
-    personWidth = body_thread[2] - body_thread[0]
-    # personArea =s Height * Width (L*W)
-    personArea = personHeight * personWidth
-    
-    # Check if Persons X Values are Within Doors X Values+1
-    # Check if Area of Persons Box is Equal to or Less Than the Doors Area
-    # body_reuslts = x1, y1, x2, y2, id, body_face
-    if (doorCoordinates[0] <= body_thread[0] <= doorCoordinates[2] and personArea <= doorArea):
-        # Person is Within Door - Detected as Entering/Leaving
-        # If Detected, Swap their Status to Opposite
-        # Iterate Through Data Sheet
-        # Compare Name to Name Found
-        for roommate in data(["roommateInfo"]):
-            if (roommate["name"] == body_face):
-                if (roommate["status"] == "Inside"):
-                    roommate["status"] = "Outside"
-                else:
-                    roommate["status"] = "Inside"
+    for (bx1, by1, bx2, by2, body_id, body_face) in body_results:
+        personHeight = by2 - by1
+        personWidth = bx2 - bx1
+        personArea = personHeight*personWidth
+        # Check if Persons X Values are Within Doors X Values+1
+        # Check if Area of Persons Box is Equal to or Less Than the Doors Area
+        if (doorCoordinates[0] <= bx1 <= doorCoordinates[2] and personArea <= doorArea):
+            # Person is Within Door - Detected as Entering/Leaving
+            # If Detected, Swap their Status to Opposite
+            # Iterate Through Data Sheet
+            # Compare Name to Name Found
+            for roommate in data(["roommateInfo"]):
+                if (roommate["name"] == body_face):
+                    if (roommate["status"] == "Inside"):
+                        roommate["status"] = "Outside"
+                    else:
+                        roommate["status"] = "Inside"
 
-        # Send Status to Web Server
-        # Not Implemented
-        #############################################################################################
+            # Send Status to Web Server
+            # Not Implemented
+            #############################################################################################
     
     # Save Updated Info to JSON File
     with open("roommateData.json", "w") as json_file:
