@@ -6,13 +6,19 @@ json_lock = threading.Lock()
 
 def create_app():
     app = Flask(__name__)
-    #we handle the manual fix button here, no func in main
+
     @app.route('/api/manualFix', methods=['POST'])
     def manual_fix():
-        #extract JSON data from the request
+        # Extract JSON data from the request
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON"}), 400
+
         name = data.get('name')
         new_status = data.get('status')
+        if not name or not new_status:
+            return jsonify({"error": "Missing 'name' or 'status'"}), 400
+
         # NOTE WITH ALREADY CLOSES JSON FILE
         with json_lock:
             with open("roommateData.json", "r") as json_file:
@@ -30,7 +36,3 @@ def create_app():
         return jsonify({"message": "Status updated successfully"}), 200
 
     return app
-
-if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True)

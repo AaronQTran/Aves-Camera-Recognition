@@ -1,20 +1,20 @@
 {
     "roommateInfo": [
         {
-            "name" : "Andrew",
-            "status" : "Inside"
+            "name": "Andrew",
+            "status": "Inside"
         },
         {
-            "name" : "Kamryn", 
-            "status" : "Inside"
+            "name": "Kamryn",
+            "status": "Inside"
         },
         {
-            "name" : "Jordan",
-            "status" : "Inside"
+            "name": "Jordan",
+            "status": "Inside"
         },
         {
-            "name" : "Nick",
-            "status" : "Inside"
+            "name": "Nick",
+            "status": "Inside"
         }
     ]
 }
