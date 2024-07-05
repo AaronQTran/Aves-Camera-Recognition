@@ -29,4 +29,3 @@ def create_app():
             return jsonify({"error": "Missing 'name' or 'status'"}), 400
         return statistics(name), 200
     return app
-           n    

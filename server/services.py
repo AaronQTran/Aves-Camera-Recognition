@@ -19,4 +19,4 @@ def update_roommate_status(name, new_status):
     return {"message": "Status updated successfully"}
 
 def statistics(name):
-    
+    return 2
