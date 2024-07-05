@@ -22,7 +22,18 @@ const Main = () => {
   const [kamrynStatus, setKamrynStatus] = useState('Inside');
   const [jordanStatus, setJordanStatus] = useState('Inside');
   const [nickStatus, setNickStatus] = useState('Inside');
-
+  const [monday, setMonday] = useState('null');
+  const [tuesday, setTuesday] = useState('null');
+  const [wednesday, setWednesday] = useState('null');
+  const [thursday, setThursday] = useState('null');
+  const [friday, setFriday] = useState('null');
+  const [saturday, setSaturday] = useState('null');
+  const [sunday, setSunday] = useState('null');
+  const [lastEnter, setLastEnter] = useState('null');
+  const [lastExit, setLastExit] = useState('null');
+  const [avgTimeAway, setAvgTimeAway] = useState('null');
+  const [avgTimesLeft, setAvgTimesLeft] = useState('null');
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
@@ -109,7 +120,7 @@ const Main = () => {
             newStatus = andrewStatus === 'Inside' ? 'Outside' : 'Inside';
             setAndrewStatus(newStatus);
             break;
-        case 'Kamryn':
+        case 'Kamryn': 
             newStatus = kamrynStatus === 'Inside' ? 'Outside' : 'Inside';
             setKamrynStatus(newStatus);
             break;
@@ -139,9 +150,13 @@ const Main = () => {
     .catch(error => {
         console.error('Error:', error);
     });
-};
+  };
 
-{/* <button onClick={() => handleManualFix('Andrew')} class="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix </button> */}
+
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <div className="bg-gray-900 w-screen min-h-screen flex flex-col md:flex-row">

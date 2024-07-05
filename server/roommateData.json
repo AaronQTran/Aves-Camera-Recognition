@@ -2,19 +2,64 @@
     "roommateInfo": [
         {
             "name": "Andrew",
-            "status": "Inside"
+            "status": "Inside",
+            "monday": "2",
+            "tuesday": "3",
+            "wednesday": "4",
+            "thursday": "5",
+            "friday": "6",
+            "saturday": "7",
+            "sunday":"8",
+            "lastEnter": "9:30 AM",
+            "lastExit": "10:00 AM",
+            "avgTimeAway": "1h 15m",
+            "avgTimeLeft": "3"
         },
         {
             "name": "Kamryn",
-            "status": "Inside"
+            "status": "Inside",
+            "monday": "2",
+            "tuesday": "3",
+            "wednesday": "4",
+            "thursday": "5",
+            "friday": "6",
+            "saturday": "7",
+            "sunday":"8",
+            "lastEnter": "9:30 AM",
+            "lastExit": "10:00 AM",
+            "avgTimeAway": "1h 15m",
+            "avgTimeLeft": "3"
         },
         {
             "name": "Jordan",
-            "status": "Inside"
+            "status": "Inside",
+            "monday": "2",
+            "tuesday": "3",
+            "wednesday": "4",
+            "thursday": "5",
+            "friday": "6",
+            "saturday": "7",
+            "sunday":"8",
+            "lastEnter": "9:30 AM",
+            "lastExit": "10:00 AM",
+            "avgTimeAway": "1h 15m",
+            "avgTimeLeft": "3"
         },
         {
             "name": "Nick",
-            "status": "Inside"
+            "status": "Inside",
+            "monday": "2",
+            "tuesday": "3",
+            "wednesday": "4",
+            "thursday": "5",
+            "friday": "6",
+            "saturday": "7",
+            "sunday":"8",
+            "lastEnter": "9:30 AM",
+            "lastExit": "10:00 AM",
+            "avgTimeAway": "1h 15m",
+            "avgTimeLeft": "3"
+            
         }
     ]
 }

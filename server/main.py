@@ -84,7 +84,7 @@ def video_processing():
         doorHeight = doorCoordinates[3] - doorCoordinates[1]
         doorWidth = doorCoordinates[2] - doorCoordinates[0]
         doorArea = doorHeight * doorWidth
-        
+          
         # Find Area of Persons Box
         for (bx1, by1, bx2, by2, body_id, body_face) in body_results:
             if body_face == 'unknown':

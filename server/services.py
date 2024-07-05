@@ -17,3 +17,6 @@ def update_roommate_status(name, new_status):
             json.dump(roommate_data, json_file, indent=4)
 
     return {"message": "Status updated successfully"}
+
+def statistics(name):
+    
