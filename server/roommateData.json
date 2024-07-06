@@ -9,7 +9,7 @@
             "thursday": "5",
             "friday": "6",
             "saturday": "7",
-            "sunday":"8",
+            "sunday": "8",
             "lastEnter": "9:30 AM",
             "lastExit": "10:00 AM",
             "avgTimeAway": "1h 15m",
@@ -24,7 +24,7 @@
             "thursday": "5",
             "friday": "6",
             "saturday": "7",
-            "sunday":"8",
+            "sunday": "8",
             "lastEnter": "9:30 AM",
             "lastExit": "10:00 AM",
             "avgTimeAway": "1h 15m",
@@ -39,7 +39,7 @@
             "thursday": "5",
             "friday": "6",
             "saturday": "7",
-            "sunday":"8",
+            "sunday": "8",
             "lastEnter": "9:30 AM",
             "lastExit": "10:00 AM",
             "avgTimeAway": "1h 15m",
@@ -54,12 +54,11 @@
             "thursday": "5",
             "friday": "6",
             "saturday": "7",
-            "sunday":"8",
+            "sunday": "8",
             "lastEnter": "9:30 AM",
             "lastExit": "10:00 AM",
             "avgTimeAway": "1h 15m",
             "avgTimeLeft": "3"
-            
         }
     ]
 }

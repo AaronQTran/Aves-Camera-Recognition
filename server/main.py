@@ -15,6 +15,10 @@ resnet = InceptionResnetV1(pretrained='vggface2').eval().to(device)
 
 cap = cv2.VideoCapture(0)
 
+frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+print(f"Frame width: {frame_width}, Frame height: {frame_height}")
+
 # Shared variables to store results
 face_results = []
 body_results = []
