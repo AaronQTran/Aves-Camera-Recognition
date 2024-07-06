@@ -65,10 +65,10 @@ def recognize_faces(frame, threshold=0.833):
                     #print(f"Identified as {identity} with distance {min_dist}")
                 else:
                     identities.append(('unknown', (x1,y1,x2,y2)))
-                    print(f"Face not recognized, minimum distance {min_dist}")
-                    print(identities)
-            else:
-                print("No face detected ")
+                    # print(f"Face not recognized, minimum distance {min_dist}")
+                    # print(identities)
+            # else:
+            #     print("No face detected ")
     return identities
 
 
