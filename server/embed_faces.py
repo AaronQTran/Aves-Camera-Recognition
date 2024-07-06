@@ -90,7 +90,6 @@ def process_person(person_dir, known_faces, progress, processed_count, chunk_siz
             continue
         
         image_path = os.path.join(person_dir, image_name)
-        print(f"Processing folder: {person_name}, image: {image_name}")
         embedding = process_image(image_path)
         if embedding is not None:
             embeddings.append(embedding)
@@ -107,7 +106,7 @@ def process_person(person_dir, known_faces, progress, processed_count, chunk_siz
 
 def main():
     base_dir = './faces_dataset'
-    chunk_size = 1200  #processes however many jpgs
+    chunk_size = 1000  #processes however many jpgs
 
     known_faces = load_known_faces(known_faces_file)
     progress = load_progress(progress_file)
