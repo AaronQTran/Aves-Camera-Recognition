@@ -116,12 +116,23 @@ def video_processing():
                     with open("roommateData.json") as json_file:
                         data = json.load(json_file)
 
+                    # Update Roommate Status Alteration to Check Time Elapsed
+                    # Ensures Only 1 Change Per Person, Per 30 Seconds
                     for roommate in data["roommateInfo"]:
                         if roommate["name"] == body_face:
-                            if roommate["status"] == "Inside":
-                                roommate["status"] = "Outside"
-                            else:
-                                roommate["status"] = "Inside"
+                            if roommate["timeStamp"] == "Null":
+                                roommate["timeStamp"] = str(time.time())
+                            elif roommate["timeStamp"] != "Null":
+                                elapsedTime = time.time() - int(roommate["timeStamp"])
+                                if elapsedTime <= 30:
+                                    if roommate["status"] == "Inside":
+                                        roommate["status"] = "Outside"
+                                        roommate["timeStamp"] = str(time.time())
+                                    else:
+                                        roommate["status"] = "Inside"
+                                        roommate["timeStamp"] = str(time.time())
+                                else:
+                                    continue
 
                     # Save Updated Info to JSON File
                     with open("roommateData.json", "w") as json_file:
