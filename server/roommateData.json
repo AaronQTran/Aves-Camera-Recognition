@@ -13,7 +13,8 @@
             "lastEnter": "9:30 AM",
             "lastExit": "10:00 AM",
             "avgTimeAway": "1h 15m",
-            "avgTimeLeft": "3"
+            "avgTimeLeft": "3",
+            "timeStamp" : "Null"
         },
         {
             "name": "Kamryn",
@@ -28,7 +29,8 @@
             "lastEnter": "9:30 AM",
             "lastExit": "10:00 AM",
             "avgTimeAway": "1h 15m",
-            "avgTimeLeft": "3"
+            "avgTimeLeft": "3",
+            "timeStamp" : "Null"
         },
         {
             "name": "Jordan",
@@ -43,7 +45,8 @@
             "lastEnter": "9:30 AM",
             "lastExit": "10:00 AM",
             "avgTimeAway": "1h 15m",
-            "avgTimeLeft": "3"
+            "avgTimeLeft": "3",
+            "timeStamp" : "Null"
         },
         {
             "name": "Nick",
@@ -58,7 +61,8 @@
             "lastEnter": "9:30 AM",
             "lastExit": "10:00 AM",
             "avgTimeAway": "1h 15m",
-            "avgTimeLeft": "3"
+            "avgTimeLeft": "3",
+            "timeStamp" : "Null"
         }
     ]
 }

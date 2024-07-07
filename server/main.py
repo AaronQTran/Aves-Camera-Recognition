@@ -6,6 +6,7 @@ from facenet_pytorch import MTCNN, InceptionResnetV1
 from facial_recognition import recognize_faces
 from YoloV5STracking.body import detectBody
 import json
+import time
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
@@ -105,9 +106,16 @@ def video_processing():
             personHeight = by2 - by1
             personWidth = bx2 - bx1
             personArea = personHeight*personWidth
+
+            # Tuples to Store Coordinates of All 4 Corners
+            topLeft = (bx1, by1)
+            bottomLeft = (bx1, by2)
+            topRight = (bx2, by1)
+            bottomRight = (bx2, by2)
             # Check if Persons X Values are Within Doors X Values+1
             # Check if Area of Persons Box is Equal to or Less Than the Doors Area
-            if (doorCoordinates[0] <= bx1 <= doorCoordinates[2] and personArea <= doorArea):
+            # Tuple of Bottom Left X Value, and Bottom Right X Value
+            if (doorCoordinates[0] <= bottomLeft[0] <= doorCoordinates[2] and doorCoordinates[0] <= bottomRight[0] <= doorCoordinates[2] and personArea <= doorArea):
                 # Person is Within Door - Detected as Entering/Leaving
                 # If Detected, Swap their Status to Opposite
                 # Iterate Through Data Sheet
@@ -117,12 +125,23 @@ def video_processing():
                     with open("roommateData.json") as json_file:
                         data = json.load(json_file)
 
+                    # Update Roommate Status Alteration to Check Time Elapsed
+                    # Ensures Only 1 Change Per Person, Per 30 Seconds
                     for roommate in data["roommateInfo"]:
                         if roommate["name"] == body_face:
-                            if roommate["status"] == "Inside":
-                                roommate["status"] = "Outside"
-                            else:
-                                roommate["status"] = "Inside"
+                            if roommate["timeStamp"] == "Null":
+                                roommate["timeStamp"] = str(time.time())
+                            elif roommate["timeStamp"] != "Null":
+                                elapsedTime = time.time() - int(roommate["timeStamp"])
+                                if elapsedTime <= 30:
+                                    if roommate["status"] == "Inside":
+                                        roommate["status"] = "Outside"
+                                        roommate["timeStamp"] = str(time.time())
+                                    else:
+                                        roommate["status"] = "Inside"
+                                        roommate["timeStamp"] = str(time.time())
+                                else:
+                                    continue
 
                     # Save Updated Info to JSON File
                     with open("roommateData.json", "w") as json_file:
