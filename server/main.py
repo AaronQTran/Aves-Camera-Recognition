@@ -7,6 +7,7 @@ from facial_recognition import recognize_faces
 from YoloV5STracking.body import detectBody
 import json
 import time
+import datetime as dt
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
@@ -78,9 +79,7 @@ def video_processing():
         # Detection if Tracked Person is Within Door Border
         # Not Implemented, but Placeholder for Door Coordinates System?
         
-        # Timeout Threshold for Individuals
-        # In Seconds
-        timeOut = 30
+        
 
         # Find Area of Door Box
         # When Coordinates Implemented
@@ -106,7 +105,21 @@ def video_processing():
             # Check if Persons X Values are Within Doors X Values+1
             # Check if Area of Persons Box is Equal to or Less Than the Doors Area
             # Tuple of Bottom Left X Value, and Bottom Right X Value
-            if (doorCoordinates[0] <= bottomLeft[0] <= doorCoordinates[2] and doorCoordinates[0] <= bottomRight[0] <= doorCoordinates[2] and personArea <= doorArea):
+            if all((doorCoordinates[0] <= point[0] <= doorCoordinates[2] for point in (bottomLeft[0], bottomRight[0])) and personArea <= doorArea):
+
+                todaysDate = dt.datetime.now()
+                # Strftime Identifiers; %A Weekday, %H Hour, %M Minute, %p AM/PM
+                # Correct 24hr to 12hr Format
+                if (todaysDate.hour >= 12):
+                    todaysDate = todaysDate.replace(hour=todaysDate.hour - 12)
+                    todaysDate = todaysDate.strftime("%A,  %H:%M PM")
+                else:
+                    todaysDate = todaysDate.strftime("%A,  %H:%M AM")
+
+                todaysWeekday = todaysDate.strftime("%A").lower()
+
+
+
                 # Person is Within Door - Detected as Entering/Leaving
                 # If Detected, Swap their Status to Opposite
                 # Iterate Through Data Sheet
@@ -120,17 +133,52 @@ def video_processing():
                     # Ensures Only 1 Change Per Person, Per 30 Seconds
                     for roommate in data["roommateInfo"]:
                         if roommate["name"] == body_face:
+
+                            # If TimeStamp Null, Set TimeStamp
                             if roommate["timeStamp"] == "Null":
                                 roommate["timeStamp"] = str(time.time())
+
+                            # If TimeStamp is Set, Check Elapsed Time
                             elif roommate["timeStamp"] != "Null":
                                 elapsedTime = time.time() - int(roommate["timeStamp"])
+
+                                # If Time Elapsed, Changes can occur
                                 if elapsedTime <= 30:
+                                    # Swap Status to Outside
                                     if roommate["status"] == "Inside":
                                         roommate["status"] = "Outside"
+
+                                        # Update TimeStamp
                                         roommate["timeStamp"] = str(time.time())
+
+                                        # Update Last Exit
+                                        roommate["lastExist"] = todaysDate
+
+                                        # Increment Weekday Left + ReCalculate Average
+                                        roommate[todaysWeekday] += 1
+                                        # Calculate Average Times Left/week
+                                        # Take Total of Each Day / Current Day of Week
+                                        currentDay = dt.datetime.now().weekday()
+                                        weekdayValues = []
+                                        for day in range (currentDay +1):
+                                            weekdayValues.append(roommate[["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"][day]])
+                                        roommate["avgTimeLeft"] = sum(weekdayValues)/len(weekdayValues)
+
+                                        # Start Point to Calculate Avg Time Away
+                                        
+
+                                    # Swap Status to Inside
                                     else:
                                         roommate["status"] = "Inside"
+                                        # Update Time Stamp
                                         roommate["timeStamp"] = str(time.time())
+                                        # Update Last Enter
+                                        roommate["lastEnter"] = todaysDate
+
+                                        # End Point to Calculate Avg Time Away
+                                        
+                                        
+
                                 else:
                                     continue
 
