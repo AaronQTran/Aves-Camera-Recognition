@@ -119,7 +119,7 @@ def video_processing():
                 todaysDate = dt.datetime.now()
                 # Strftime Identifiers; %A Weekday, %H Hour, %M Minute, %p AM/PM
                 # Correct 24hr to 12hr Format
-                if (todaysDate.hour >= 12):
+                if (todaysDate.hour > 12):
                     todaysDate = todaysDate.replace(hour=todaysDate.hour - 12)
                     todaysDate = todaysDate.strftime("%A,  %H:%M PM")
                 else:
@@ -152,7 +152,7 @@ def video_processing():
                                 elapsedTime = time.time() - int(roommate["timeStamp"])
 
                                 # If Time Elapsed, Changes can occur
-                                if elapsedTime <= 30:
+                                if elapsedTime >= 30:
                                     # Swap Status to Outside
                                     if roommate["status"] == "Inside":
                                         roommate["status"] = "Outside"
@@ -167,14 +167,16 @@ def video_processing():
                                         roommate[todaysWeekday] += 1
                                         # Calculate Average Times Left/week
                                         # Take Total of Each Day / Current Day of Week
+                                        # .weekday() Returns Number of Day in Week Starting at 0. Monday is 0, Sunday is 6.
                                         currentDay = dt.datetime.now().weekday()
                                         weekdayValues = []
-                                        for day in range (currentDay +1):
+                                        for day in range (currentDay + 1):
                                             weekdayValues.append(roommate[["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"][day]])
                                         roommate["avgTimeLeft"] = sum(weekdayValues)/len(weekdayValues)
 
                                         # Start Point to Calculate Avg Time Away
-                                        
+                                        # Epoch Seconds
+                                        timeStart = time.time()
 
                                     # Swap Status to Inside
                                     else:
@@ -185,8 +187,30 @@ def video_processing():
                                         roommate["lastEnter"] = todaysDate
 
                                         # End Point to Calculate Avg Time Away
-                                        
-                                        
+                                        # Epoch Seconds
+                                        timeEnd = time.time()
+                                
+                                    # Calculate Difference in Seconds
+                                    timeDiff = timeEnd - timeStart
+
+                                    # Add that Time Elapsed to "totalTimeAway"
+                                    roommate["totalTimeAway"] += timeDiff
+                                    # Increment Instances
+                                    roommate["timeInstances"] += 1
+                                    # Average Time Away in Epoch Seconds
+                                    avgEpoch = roommate["totalTimeAway"]/roommate["timeInstances"]
+                                    # Conversion of Epoch Seconds to Readable Time
+                                    # Epoch can be Converted to Datetime Object
+                                    epochConversion = dt.datetime.fromtimestamp(avgEpoch)
+
+                                    # Conversion of 24hr format to 12hr Format
+                                    if (epochConversion.hour > 12):
+                                        epochConversion = epochConversion.replace(hour=todaysDate.hour - 12)
+                                        epochConversion = epochConversion.strftime("%A,  %H:%M PM")
+                                    else:
+                                        epochConversion = epochConversion.strftime("%A,  %H:%M AM")
+
+                                    roommate["avgTimeAway"] = epochConversion
 
                                 else:
                                     continue
