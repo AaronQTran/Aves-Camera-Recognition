@@ -25,6 +25,7 @@ print(f"Frame width: {frame_width}, Frame height: {frame_height}")
 face_results = []
 body_results = []
 body_faces = {}  # Maps body_id to body_face
+unknown_faces = {}
 
 # Lock for JSON file access
 json_lock = threading.Lock()
@@ -58,9 +59,17 @@ def video_processing():
             bx1, by1, bx2, by2, body_id, body_face = body_results[i][:6]
             if body_id not in body_faces:
                 body_faces[body_id] = 'unknown'
+                unknown_faces[body_id] = 0
             for identity, (fx1, fy1, fx2, fy2) in face_results:
                 if fx1 >= bx1 and fy1 >= by1 and fx2 <= bx2 and fy2 <= by2:
+                    if identity == 'unknown':
+                        unknown_faces[body_id]+=1
+                        if unknown_faces[body_id]>=5:
+                            body_faces[body_id] = identity
+                            unknown_faces[body_id] = 0
+                        break
                     body_faces[body_id] = identity
+                    unknown_faces[body_id] = 0
                     break
             body_face = body_faces[body_id]
             body_results[i] = (bx1, by1, bx2, by2, body_id, body_face)
