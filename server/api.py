@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from services import update_roommate_status
-from services import statistics
+from services import get_statistics
 
 def create_app():
     app = Flask(__name__)
@@ -27,7 +27,7 @@ def create_app():
         name = data.get('name')
         if not name:
             return jsonify({"error": "Missing 'name'"}), 400
-        return statistics(name), 200
+        return get_statistics(name), 200
 
     # def pull_data():
     #     name = request.args.get('name')
