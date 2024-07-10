@@ -26,6 +26,14 @@ def create_app():
             return jsonify({"error": "Invalid JSON"}), 400
         name = data.get('name')
         if not name:
-            return jsonify({"error": "Missing 'name' or 'status'"}), 400
+            return jsonify({"error": "Missing 'name'"}), 400
         return statistics(name), 200
+
+    # def pull_data():
+    #     name = request.args.get('name')
+    #     if not name:
+    #         return jsonify({"error": "Missing 'name'"}), 400
+
+    #     response = get_statistics(name)
+    #     return jsonify(response), 200
     return app

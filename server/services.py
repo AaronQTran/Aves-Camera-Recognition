@@ -1,22 +1,39 @@
 import json
 import threading
-
+import mysql.connector
+from db_config import get_db_connection
 json_lock = threading.Lock()
 
 def update_roommate_status(name, new_status):
-    with json_lock:
-        with open("roommateData.json", "r") as json_file:
-            roommate_data = json.load(json_file)
+    connection = get_db_connection()
+    cursor = connection.cursor()
 
-        for roommate in roommate_data["roommateInfo"]:
-            if roommate["name"] == name:
-                roommate["status"] = new_status
-                break
+    update_sql = "UPDATE roommates SET status = %s WHERE name = %s"
+    cursor.execute(update_sql, (new_status, name))
+    connection.commit()
 
-        with open("roommateData.json", "w") as json_file:
-            json.dump(roommate_data, json_file, indent=4)
+    cursor.close()
+    connection.close()
 
-    return {"message": "Status updated successfully"}
+    return {"status": "success", "message": f"Updated {name} to {new_status}"}
 
-def statistics(name):
-    return 2
+def get_statistics(name):
+    connection = get_db_connection()
+    cursor = connection.cursor() #cursor allows u to iterate records of table and query/fetch
+
+    select_sql = "SELECT avgTimesLeft, lastEnter, lastExit, avgTimeAway FROM roommates WHERE name = %s"
+    cursor.execute(select_sql, (name,))
+    result = cursor.fetchone() #result equals none if it cant find row, otherwise it equals a tuple that has he values 
+
+    cursor.close()
+    connection.close()
+
+    if result:
+        return {
+            "avgTimesLeft": result[0],
+            "lastTimeEntered": result[1],
+            "lastTimeExited": result[2],
+            "avgTimeAway": result[3]
+        }
+    else:
+        return {"error": "No data found for the specified name"}
