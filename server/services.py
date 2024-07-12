@@ -19,21 +19,33 @@ def update_roommate_status(name, new_status):
 
 def get_statistics(name):
     connection = get_db_connection()
-    cursor = connection.cursor() #cursor allows u to iterate records of table and query/fetch
+    cursor = connection.cursor()
 
-    select_sql = "SELECT avgTimesLeft, lastEnter, lastExit, avgTimeAway FROM roommates WHERE name = %s"
+    select_sql = """
+    SELECT status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, avgTimesLeft, lastEnter, lastExit, avgTimeAway
+    FROM roommates
+    WHERE name = %s
+    """
     cursor.execute(select_sql, (name,))
-    result = cursor.fetchone() #result equals none if it cant find row, otherwise it equals a tuple that has he values 
+    result = cursor.fetchone()
 
     cursor.close()
     connection.close()
 
     if result:
         return {
-            "avgTimesLeft": result[0],
-            "lastTimeEntered": result[1],
-            "lastTimeExited": result[2],
-            "avgTimeAway": result[3]
+            "status": result[0],
+            "monday": result[1],
+            "tuesday": result[2],
+            "wednesday": result[3],
+            "thursday": result[4],
+            "friday": result[5],
+            "saturday": result[6],
+            "sunday": result[7],
+            "avgTimesLeft": result[8],
+            "lastTimeEntered": result[10],
+            "lastTimeExited": result[11],
+            "avgTimeAway": result[12]
         }
     else:
         return {"error": "No data found for the specified name"}
