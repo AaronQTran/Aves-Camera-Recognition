@@ -8,6 +8,7 @@ from YoloV5STracking.body import detectBody
 import json
 import time
 import datetime as dt
+from db_config import get_db_connection
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
@@ -114,8 +115,7 @@ def video_processing():
             # Check if Persons X Values are Within Doors X Values+1
             # Check if Area of Persons Box is Equal to or Less Than the Doors Area
             # Tuple of Bottom Left X Value, and Bottom Right X Value
-            if all((doorCoordinates[0] <= point[0] <= doorCoordinates[2] for point in (bottomLeft[0], bottomRight[0])) and personArea <= doorArea):
-
+            if (doorCoordinates[0] <= bottomLeft[0] <= doorCoordinates[2] and doorCoordinates[0] <= bottomRight[0] <= doorCoordinates[2] and personArea <= doorArea):
                 todaysDate = dt.datetime.now()
                 # Strftime Identifiers; %A Weekday, %H Hour, %M Minute, %p AM/PM
                 # Correct 24hr to 12hr Format
@@ -127,97 +127,137 @@ def video_processing():
 
                 todaysWeekday = todaysDate.strftime("%A").lower()
 
+                AvesDB = get_db_connection()
+                AvesCur = AvesDB.cursor()
 
+                # Grab DB Users
+                AvesCur.execute("SELECT * FROM roommates WHERE name=%s",body_face)
 
-                # Person is Within Door - Detected as Entering/Leaving
-                # If Detected, Swap their Status to Opposite
-                # Iterate Through Data Sheet
-                # Compare Name to Name Found
-                # Note WITH ALREADY CLOSES JSON FILE, with makes sure only 1 thread can read/write to json file in an instance/
-                with json_lock:  
-                    with open("roommateData.json") as json_file:
-                        data = json.load(json_file)
+                # Fetch User's Meeting Data
+                AvesUser = AvesCur.fetchone()
 
-                    # Update Roommate Status Alteration to Check Time Elapsed
-                    # Ensures Only 1 Change Per Person, Per 30 Seconds
-                    for roommate in data["roommateInfo"]:
-                        if roommate["name"] == body_face:
+                # Index Information
+                # 0(ID), 1(Name), 2(Status), 3-9(Monday-Sunday), 10(LastEnter), 11(LastExit), 12(avgTimeAway), 13(avgTimeLeft), 14(timeStamp), 15(totaltimeAway), 16(timeInstance)
 
-                            # If TimeStamp Null, Set TimeStamp
-                            if roommate["timeStamp"] == "Null":
-                                roommate["timeStamp"] = str(time.time())
+                # If User Grabbed
+                if AvesUser:
+                    # Check Time Stamp Information
+                    if (AvesUser[14] == "Null"):
+                        sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
+                        val = (str(time.time()), body_face)
+                        AvesCur.execute(sql, val)
+                    elif (AvesUser[14] != "Null"):
+                        elapsedtime = time.time() - int(AvesUser[14])
+                        # If Time Elapsed >= 30 Seconds
+                        if elapsedtime >= 30:
+                            if (AvesUser[2] == "Inside"):
+                                # Swap Status
+                                sql = "UPDATE roommates SET status =%s WHERE name = %s"
+                                val = ("Outside", body_face)
+                                AvesCur.execute(sql, val)
 
-                            # If TimeStamp is Set, Check Elapsed Time
-                            elif roommate["timeStamp"] != "Null":
-                                elapsedTime = time.time() - int(roommate["timeStamp"])
+                                # Update TimeStamp
+                                sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
+                                val = (str(time.time()), body_face)
+                                AvesCur.execute(sql, val)
 
-                                # If Time Elapsed, Changes can occur
-                                if elapsedTime >= 30:
-                                    # Swap Status to Outside
-                                    if roommate["status"] == "Inside":
-                                        roommate["status"] = "Outside"
+                                # Update LastExit
+                                sql = "UPDATE roommates SET lastExit =%s WHERE name = %s"
+                                val = (todaysDate, body_face)
+                                AvesCur.execute(sql, val)
 
-                                        # Update TimeStamp
-                                        roommate["timeStamp"] = str(time.time())
+                                # Increment Weekday
+                                for i in range(3,10):
+                                    if (AvesUser[i] == todaysWeekday):
+                                        sql = "UPDATE roommates SET %s = %s + 1 WHERE name = %s"
+                                        val = (todaysWeekday, todaysWeekday, body_face)
+                                        AvesCur.execute(sql, val)
 
-                                        # Update Last Exit
-                                        roommate["lastExist"] = todaysDate
+                                # Calculate Average Times Left/week
+                                # Take Total of Each Day / Current Day of Week
+                                # .weekday() Returns Number of Day in Week Starting at 0. Monday is 0, Sunday is 6.
 
-                                        # Increment Weekday Left + ReCalculate Average
-                                        roommate[todaysWeekday] += 1
-                                        # Calculate Average Times Left/week
-                                        # Take Total of Each Day / Current Day of Week
-                                        # .weekday() Returns Number of Day in Week Starting at 0. Monday is 0, Sunday is 6.
-                                        currentDay = dt.datetime.now().weekday()
-                                        weekdayValues = []
-                                        for day in range (currentDay + 1):
-                                            weekdayValues.append(roommate[["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"][day]])
-                                        roommate["avgTimeLeft"] = sum(weekdayValues)/len(weekdayValues)
+                                # Monday = 0, We Will Add 3 to this to match tuple indexes.
+                                currentDay = dt.datetime.now().weekday() + 3
 
-                                        # Start Point to Calculate Avg Time Away
-                                        # Epoch Seconds
-                                        timeStart = time.time()
+                                weekdayValues = []
+                                for day in range(currentDay):
+                                    weekdayValues.append(AvesUser[day])
 
-                                    # Swap Status to Inside
-                                    else:
-                                        roommate["status"] = "Inside"
-                                        # Update Time Stamp
-                                        roommate["timeStamp"] = str(time.time())
-                                        # Update Last Enter
-                                        roommate["lastEnter"] = todaysDate
+                                # Total Values in Weekday
+                                totalVal = 0
+                                for i in range(len(weekdayValues)):
+                                    totalVal += weekdayValues[i]
 
-                                        # End Point to Calculate Avg Time Away
-                                        # Epoch Seconds
-                                        timeEnd = time.time()
-                                
-                                    # Calculate Difference in Seconds
-                                    timeDiff = timeEnd - timeStart
+                                # Calculate Avg Time Left
+                                # Total Values in WeekdayValues/len(weekdayValues)
+                                avgTimeLeft = totalVal/len(weekdayValues)
 
-                                    # Add that Time Elapsed to "totalTimeAway"
-                                    roommate["totalTimeAway"] += timeDiff
-                                    # Increment Instances
-                                    roommate["timeInstances"] += 1
-                                    # Average Time Away in Epoch Seconds
-                                    avgEpoch = roommate["totalTimeAway"]/roommate["timeInstances"]
-                                    # Conversion of Epoch Seconds to Readable Time
-                                    # Epoch can be Converted to Datetime Object
-                                    epochConversion = dt.datetime.fromtimestamp(avgEpoch)
+                                # Update avgTimeLeft
+                                sql = "UPDATE roommates SET avgTimeLeft = %s WHERE name = %s"
+                                val = (avgTimeLeft, body_face)
+                                AvesCur.execute(sql, val)
 
-                                    # Conversion of 24hr format to 12hr Format
-                                    if (epochConversion.hour > 12):
-                                        epochConversion = epochConversion.replace(hour=todaysDate.hour - 12)
-                                        epochConversion = epochConversion.strftime("%A,  %H:%M PM")
-                                    else:
-                                        epochConversion = epochConversion.strftime("%A,  %H:%M AM")
+                                # Start Point to Calculate Avg Time Away
+                                # Epoch Seconds
+                                timeStart = time.time()
+                            else:
+                                # Swap Status
+                                AvesUser[2] = "Inside"
+                                sql = "UPDATE roommates SET status =%s WHERE name = %s"
+                                val = ("Outside", body_face)
+                                AvesCur.execute(sql, val)
 
-                                    roommate["avgTimeAway"] = epochConversion
+                                # Update TimeStamp 
+                                sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
+                                val = (str(time.time()), body_face)
+                                AvesCur.execute(sql, val)
 
-                                else:
-                                    continue
+                                # Update LastEnter
+                                sql = "UPDATE roommates SET lastEnter =%s WHERE name = %s"
+                                val = (todaysDate, body_face)
+                                AvesCur.execute(sql, val)
 
-                    # Save Updated Info to JSON File
-                    with open("roommateData.json", "w") as json_file:
-                        json.dump(data, json_file, indent=4)
+                                # Start Point to Calculate Avg Time Away
+                                # Epoch Seconds
+                                timeEnd = time.time()
+
+                        # Calculate Difference in Seconds
+                        timeDiff = timeEnd - timeStart
+
+                        # Add Elapsed Time to totalTimeAway
+                        sql = "UPDATE roommates SET totalTimeAway = totalTimeAway + %s WHERE name = %s"
+                        val = (timeDiff, body_face)
+                        AvesCur.execute(sql, val)
+
+                        # Increment Time Instances
+                        sql = "UPDATE roommates SET timeInstance = timeInstance + %s WHERE name = %s"
+                        val = (1, body_face)
+                        AvesCur.execute(sql, val)
+
+                        # Calculate Average
+                        avgEpoch = AvesUser[3:10]/AvesUser[16]
+
+                        # Conversion of Epoch Seconds to Readable Time
+                        # Epoch can be Converted to Datetime Object
+                        epochConversion = dt.datetime.fromtimestamp(avgEpoch)
+
+                        # Conversion of 24hr format to 12hr Format
+                        if (epochConversion.hour > 12):
+                            epochConversion = epochConversion.replace(hour=todaysDate.hour - 12)
+                            epochConversion = epochConversion.strftime("%A,  %H:%M PM")
+                        else:
+                            epochConversion = epochConversion.strftime("%A,  %H:%M AM")
+
+                        # Update Avg Time Away
+                        sql = "UPDATE roommates SET lastExit = avgTimeAway + %s WHERE name = %s"
+                        val = (epochConversion, body_face)
+                        AvesCur.execute(sql, val)
+                    else:
+                        continue
+
+            # Commit Changes
+            AvesDB.commit()
 
         # Camera Display w/ Facial Tracking and Body Tracking
         cv2.imshow('Video', frame)

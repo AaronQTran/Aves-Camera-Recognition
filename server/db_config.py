@@ -4,7 +4,8 @@ from mysql.connector import Error
 def get_db_connection():
     try:
         mydb = mysql.connector.connect(
-            host="127.0.0.1",
+            host="104.196.28.242",
+            #host="127.0.0.1",
             user="root",
             password="os$s,TYgCBV}is$h",
             database="aves-db",
