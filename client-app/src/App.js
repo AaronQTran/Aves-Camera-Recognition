@@ -18,21 +18,38 @@ const Statistic = ({ label, value }) => (
 
 const Main = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const [andrewStatus, setAndrewStatus] = useState('Inside');
-  const [kamrynStatus, setKamrynStatus] = useState('Inside');
-  const [jordanStatus, setJordanStatus] = useState('Inside');
-  const [nickStatus, setNickStatus] = useState('Inside');
-  const [monday, setMonday] = useState('null');
-  const [tuesday, setTuesday] = useState('null');
-  const [wednesday, setWednesday] = useState('null');
-  const [thursday, setThursday] = useState('null');
-  const [friday, setFriday] = useState('null');
-  const [saturday, setSaturday] = useState('null');
-  const [sunday, setSunday] = useState('null');
-  const [lastEnter, setLastEnter] = useState('null');
-  const [lastExit, setLastExit] = useState('null');
-  const [avgTimeAway, setAvgTimeAway] = useState('null');
-  const [avgTimesLeft, setAvgTimesLeft] = useState('null');
+  const [andrewData, setAndrewData] = useState({});
+  const [kamrynData, setKamrynData] = useState({});
+  const [jordanData, setJordanData] = useState({});
+  const [nickData, setNickData] = useState({});
+
+  useEffect(() => {
+    fetch('/api/stat?name=Andrew') // ? passes in the get request arg
+      .then(response => response.json())
+      .then(data => setAndrewData(data))
+      .catch(error => console.error('Error:', error));
+  }, []);
+  
+  useEffect(() => {
+    fetch('/api/stat?name=Kamryn')
+      .then(response => response.json())
+      .then(data => setKamrynData(data))
+      .catch(error => console.error('Error:', error));
+  }, []);
+  
+  useEffect(() => {
+    fetch('/api/stat?name=Jordan')
+      .then(response => response.json())
+      .then(data => setJordanData(data))
+      .catch(error => console.error('Error:', error));
+  }, []);
+  
+  useEffect(() => {
+    fetch('/api/stat?name=Nick')
+      .then(response => response.json())
+      .then(data => setNickData(data))
+      .catch(error => console.error('Error:', error));
+  }, []);
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,12 +59,12 @@ const Main = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const data = {
+  const andrewDataObject = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [
       {
         label: '# of Times Leaving',
-        data: [12, 19, 3, 5, 2, 3, 7], //fake data
+        data: [andrewData.monday, andrewData.tuesday, andrewData.wednesday, andrewData.thursday, andrewData.friday, andrewData.saturday, andrewData.sunday],
         fill: true, 
         backgroundColor: 'rgba(0, 128, 128, 0.2)', 
         pointBackgroundColor: 'white',
@@ -56,6 +73,82 @@ const Main = () => {
         tension: 0.3
       },
     ],
+  };
+  
+  const kamrynDataObject = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    datasets: [
+      {
+        label: '# of Times Leaving',
+        data: [kamrynData.monday, kamrynData.tuesday, kamrynData.wednesday, kamrynData.thursday, kamrynData.friday, kamrynData.saturday, kamrynData.sunday],
+        fill: true, 
+        backgroundColor: 'rgba(0, 128, 128, 0.2)', 
+        pointBackgroundColor: 'white',
+        pointBorderColor: 'white',
+        borderColor: 'purple',
+        tension: 0.3
+      },
+    ],
+  };
+  
+  const jordanDataObject = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    datasets: [
+      {
+        label: '# of Times Leaving',
+        data: [jordanData.monday, jordanData.tuesday, jordanData.wednesday, jordanData.thursday, jordanData.friday, jordanData.saturday, jordanData.sunday],
+        fill: true, 
+        backgroundColor: 'rgba(0, 128, 128, 0.2)', 
+        pointBackgroundColor: 'white',
+        pointBorderColor: 'white',
+        borderColor: 'purple',
+        tension: 0.3
+      },
+    ],
+  };
+  
+  const nickDataObject = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    datasets: [
+      {
+        label: '# of Times Leaving',
+        data: [nickData.monday, nickData.tuesday, nickData.wednesday, nickData.thursday, nickData.friday, nickData.saturday, nickData.sunday],
+        fill: true, 
+        backgroundColor: 'rgba(0, 128, 128, 0.2)', 
+        pointBackgroundColor: 'white',
+        pointBorderColor: 'white',
+        borderColor: 'purple',
+        tension: 0.3
+      },
+    ],
+  };
+  
+  
+  const statistics = {
+    Andrew: {
+      avgTimesLeft: andrewData.avgTimesLeft,
+      lastTimeEntered: andrewData.lastEnter,
+      lastTimeExited: andrewData.lastExit,
+      avgTimeAway: andrewData.avgTimeAway
+    },
+    Kamryn: {
+      avgTimesLeft: kamrynData.avgTimesLeft,
+      lastTimeEntered: kamrynData.lastEnter,
+      lastTimeExited: kamrynData.lastExit,
+      avgTimeAway: kamrynData.avgTimeAway
+    },
+    Jordan: {
+      avgTimesLeft: jordanData.avgTimesLeft,
+      lastTimeEntered: jordanData.lastEnter,
+      lastTimeExited: jordanData.lastExit,
+      avgTimeAway: jordanData.avgTimeAway
+    },
+    Nick: {
+      avgTimesLeft: nickData.avgTimesLeft,
+      lastTimeEntered: nickData.lastEnter,
+      lastTimeExited: nickData.lastExit,
+      avgTimeAway: nickData.avgTimeAway
+    }
   };
 
   const options = {
@@ -85,57 +178,30 @@ const Main = () => {
     },
   };
 
-  const statistics = {
-    Andrew: {
-      avgTimesLeft: 5,
-      lastTimeEntered: '8:00 AM',
-      lastTimeExited: '5:00 PM',
-      avgTimeAway: '1h 30m'
-    },
-    Kamryn: {
-      avgTimesLeft: 4,
-      lastTimeEntered: '8:30 AM',
-      lastTimeExited: '5:15 PM',
-      avgTimeAway: '1h 15m'
-    },
-    Jordan: {
-      avgTimesLeft: 6,
-      lastTimeEntered: '9:00 AM',
-      lastTimeExited: '5:45 PM',
-      avgTimeAway: '2h'
-    },
-    Nick: {
-      avgTimesLeft: 3,
-      lastTimeEntered: '7:45 AM',
-      lastTimeExited: '4:30 PM',
-      avgTimeAway: '1h'
-    }
-  };
-
   const handleManualFix = (name) => {
     //determine new status
     let newStatus;
     switch (name) {
-        case 'Andrew':
-            newStatus = andrewStatus === 'Inside' ? 'Outside' : 'Inside';
-            setAndrewStatus(newStatus);
-            break;
-        case 'Kamryn': 
-            newStatus = kamrynStatus === 'Inside' ? 'Outside' : 'Inside';
-            setKamrynStatus(newStatus);
-            break;
-        case 'Jordan':
-            newStatus = jordanStatus === 'Inside' ? 'Outside' : 'Inside';
-            setJordanStatus(newStatus);
-            break;
-        case 'Nick':
-            newStatus = nickStatus === 'Inside' ? 'Outside' : 'Inside';
-            setNickStatus(newStatus);
-            break;
-        default:
-            return;
+      case 'Andrew':
+        newStatus = andrewData.status === 'Inside' ? 'Outside' : 'Inside';
+        setAndrewData(prevState => ({ ...prevState, status: newStatus })); //creates a new obj with the new changes, obj are immutable, usestates are asynchronous 
+        break;
+      case 'Kamryn': 
+        newStatus = kamrynData.status === 'Inside' ? 'Outside' : 'Inside';
+        setKamrynData(prevState => ({ ...prevState, status: newStatus }));
+        break;
+      case 'Jordan':
+        newStatus = jordanData.status === 'Inside' ? 'Outside' : 'Inside';
+        setJordanData(prevState => ({ ...prevState, status: newStatus }));
+        break;
+      case 'Nick':
+        newStatus = nickData.status === 'Inside' ? 'Outside' : 'Inside';
+        setNickData(prevState => ({ ...prevState, status: newStatus }));
+        break;
+      default:
+        return;
     }
-
+    
     fetch('/api/manualFix', {
         method: 'POST',
         headers: {
@@ -152,12 +218,6 @@ const Main = () => {
     });
   };
 
-
-
-  useEffect(() => {
-
-  }, [])
-
   return (
     <div className="bg-gray-900 w-screen min-h-screen flex flex-col md:flex-row">
       {showSplash && (
@@ -167,12 +227,12 @@ const Main = () => {
         </div>
       )}
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
-        <h1 className="font-medium text-red-500 font-custom text-4xl">Andrew</h1>
+        <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Andrew</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Andrew" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
-          <Line data={data} options={options} />
+          <Line data={andrewDataObject} options={options} />
         </div>
         <div className="w-5/6 mt-2 text-white grid grid-cols-2 gap-4">
           <Statistic label="Avg Times Left/day" value={statistics.Andrew.avgTimesLeft} />
@@ -181,15 +241,14 @@ const Main = () => {
           <Statistic label="Average Time Away/day" value={statistics.Andrew.avgTimeAway} />
         </div>
         <button onClick={() => handleManualFix('Andrew')} className="btn btn-moving-gradient btn-moving-gradient--blue mt-12">Manual fix <BuildOutlinedIcon style={{ fontSize: 25, color: 'white' }}/></button>
-
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
-        <h1 className="font-medium text-green-500 font-custom text-4xl">Kamryn</h1>
+      <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Kamryn</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Kamryn" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
-          <Line data={data} options={options} />
+          <Line data={kamrynDataObject} options={options} />
         </div>
         <div className="w-5/6 mt-2 text-white grid grid-cols-2 gap-4">
           <Statistic label="Avg Times Left/day" value={statistics.Kamryn.avgTimesLeft} />
@@ -200,12 +259,12 @@ const Main = () => {
         <button onClick={() => handleManualFix('Kamryn')} className="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix <BuildOutlinedIcon style={{ fontSize: 25, color: 'white' }}/> </button>
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
-        <h1 className="text-white font-medium font-custom text-4xl">Jordan</h1>
+      <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Jordan</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Jordan" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
-          <Line data={data} options={options} />
+          <Line data={jordanDataObject} options={options} />
         </div>
         <div className="w-5/6 mt-2 text-white grid grid-cols-2 gap-4">
           <Statistic label="Avg Times Left/day" value={statistics.Jordan.avgTimesLeft} />
@@ -216,12 +275,12 @@ const Main = () => {
         <button onClick={() => handleManualFix('Jordan')} className="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix <BuildOutlinedIcon style={{ fontSize: 25, color: 'white' }}/></button>
       </div>
       <div className="md:w-1/4 w-full flex flex-col items-center">
-        <h1 className="text-white font-medium font-custom text-4xl">Nick</h1>
+      <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Nick</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Nick" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
-          <Line data={data} options={options} />
+          <Line data={nickDataObject} options={options} />
         </div>
         <div className="w-5/6 mt-2 text-white grid grid-cols-2 gap-4">
           <Statistic label="Avg Times Left/day" value={statistics.Nick.avgTimesLeft} />
