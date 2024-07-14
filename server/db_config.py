@@ -9,7 +9,7 @@ def get_db_connection():
             user="root",
             password="os$s,TYgCBV}is$h",
             database="aves-db",
-            port=5432
+            port=3306
         )
         if mydb.is_connected():
             return mydb
@@ -28,7 +28,7 @@ if mydb:
         mycursor.execute(truncate_sql)
         
         # Insert new data
-        sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimeLeft, timeStamp, totalTimeAway, timeInstances) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimesLeft, timeStamp, totalTimeAway, timeInstances) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = [
             ("Andrew", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
             ("Kamryn", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
