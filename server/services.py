@@ -43,9 +43,9 @@ def get_statistics(name):
             "saturday": result[6],
             "sunday": result[7],
             "avgTimesLeft": result[8],
-            "lastTimeEntered": result[10],
-            "lastTimeExited": result[11],
-            "avgTimeAway": result[12]
+            "lastEnter": result[9],
+            "lastExit": result[10],
+            "avgTimeAway": result[11]
         }
     else:
         return {"error": "No data found for the specified name"}

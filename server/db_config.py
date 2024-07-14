@@ -17,33 +17,59 @@ def get_db_connection():
         print(f"Error connecting to MySQL: {e}")
         return None
 
-mydb = get_db_connection()
+def initialize_database():
+    mydb = get_db_connection()
+    if mydb:
+        try:
+            mycursor = mydb.cursor()
+            
+            # Drop the table
+            drop_sql = "DROP TABLE IF EXISTS roommates"
+            mycursor.execute(drop_sql)
 
-if mydb:
-    try:
-        mycursor = mydb.cursor()
-        
-        # Truncate the table
-        truncate_sql = "TRUNCATE TABLE roommates"
-        mycursor.execute(truncate_sql)
-        
-        # Insert new data
-        sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimesLeft, timeStamp, totalTimeAway, timeInstances) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        val = [
-            ("Andrew", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
-            ("Kamryn", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
-            ("Jordan", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
-            ("Nick", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0)
-        ]
+            # Create the table
+            create_sql = """
+            CREATE TABLE roommates (
+                name VARCHAR(255),
+                status VARCHAR(255),
+                monday INT,
+                tuesday INT,
+                wednesday INT,
+                thursday INT,
+                friday INT,
+                saturday INT,
+                sunday INT,
+                lastEnter VARCHAR(255),
+                lastExit VARCHAR(255),
+                avgTimeAway VARCHAR(255),
+                avgTimesLeft INT,
+                timeStamp VARCHAR(255),
+                totalTimeAway INT,
+                timeInstances INT
+            )
+            """
+            mycursor.execute(create_sql)
+            
+            # Insert new data
+            sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimesLeft, timeStamp, totalTimeAway, timeInstances) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = [
+                ("Andrew", "Inside", 0, 0, 0, 0, 0, 0, 0, "test", "test", "test", 0, "Null", 0, 0),
+                ("Kamryn", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
+                ("Jordan", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
+                ("Nick", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0)
+            ]
 
-        mycursor.executemany(sql, val)
-        mydb.commit()
+            mycursor.executemany(sql, val)
+            mydb.commit()
 
-        print(mycursor.rowcount, "record(s) inserted.")
-    except Error as e:
-        print(f"Error executing SQL: {e}")
-    finally:
-        mycursor.close()
-        mydb.close()
-else:
-    print("Failed to connect to the database.")
+            print(mycursor.rowcount, "record(s) inserted.")
+        except Error as e:
+            print(f"Error executing SQL: {e}")
+        finally:
+            mycursor.close()
+            mydb.close()
+    else:
+        print("Failed to connect to the database.")
+
+if __name__ == "__main__":
+    initialize_database()

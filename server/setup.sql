@@ -16,6 +16,6 @@ CREATE TABLE roommates (
     lastEnter VARCHAR(255),
     lastExit VARCHAR(255),
     avgTimeAway VARCHAR(255),
-    avgTimeLeft INT,
+    avgTimesLeft INT,
     timeStamp VARCHAR(255)
 );
