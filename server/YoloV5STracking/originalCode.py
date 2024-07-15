@@ -8,7 +8,7 @@ import numpy as np
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 
 # Open Video Capture of CCTV for Testing
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture("C:/Users/kamry/Desktop/AvesCameraAI/Aves-Camera-Recognition/KamTestFinal.mp4")
 
 # Function to Show X & Y Coordinates of Mouse Cursor
 def POINTS(event, x, y, flags, param):
@@ -30,7 +30,7 @@ while True:
         print("Error: Failed to capture frame")
         break
     
-    frame = cv2.resize(frame, (640, 480))
+    frame = cv2.resize(frame, (1280, 720))
     # Inference
     results = model(frame)
     # Pandas Displays Data within Results

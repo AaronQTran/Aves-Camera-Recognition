@@ -9,6 +9,7 @@ import json
 import time
 import datetime as dt
 from db_config import get_db_connection
+from services import get_statistics
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
@@ -16,7 +17,7 @@ print(f"Using device: {device}")
 mtcnn = MTCNN(image_size=160, margin=20, keep_all=True, device=device)
 resnet = InceptionResnetV1(pretrained='vggface2').eval().to(device)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture("C:/Users/kamry/Desktop/AvesCameraAI/Aves-Camera-Recognition/KamTestFinal.mp4")
 
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -40,6 +41,8 @@ def process_bodies(frame):
     body_results = detectBody(frame)
 
 def video_processing():
+    cv2.namedWindow('Video', cv2.WINDOW_NORMAL)  # Create a window named 'Video'
+    cv2.resizeWindow('Video', 1280,720)  # Resize the window to the desired dimensions
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -94,11 +97,24 @@ def video_processing():
         # Find Area of Door Box
         # When Coordinates Implemented
         # doorCoordinates = [x1, y1, x2, y2]
-        doorCoordinates = [0, 0, 0, 0]
-        doorHeight = doorCoordinates[3] - doorCoordinates[1]
-        doorWidth = doorCoordinates[2] - doorCoordinates[0]
+        doorCoordinates = [350,50,700,715]
+
+        dx1 = doorCoordinates[0]
+        dx2 = doorCoordinates[2]
+        dy1 = doorCoordinates[1]
+        dy2 = doorCoordinates[3]
+
+        doorTopLeft = (dx1, dy1)
+        doorBottomLeft = (dx1, dy2)
+        doorTopRight = (dx2, dy1)
+        doorBottomRight = (dx2, dy2)
+
+        doorHeight = dy2 - dy1
+        doorWidth = dx2 - dx1
         doorArea = doorHeight * doorWidth
-          
+
+        
+
         # Find Area of Persons Box
         for (bx1, by1, bx2, by2, body_id, body_face) in body_results:
             if body_face == 'unknown':
@@ -108,14 +124,14 @@ def video_processing():
             personArea = personHeight*personWidth
 
             # Tuples to Store Coordinates of All 4 Corners
-            topLeft = (bx1, by1)
-            bottomLeft = (bx1, by2)
-            topRight = (bx2, by1)
-            bottomRight = (bx2, by2)
+            personTopLeft = (bx1, by1)
+            personBottomLeft = (bx1, by2)
+            personTopRight = (bx2, by1)
+            personBottomRight = (bx2, by2)
             # Check if Persons X Values are Within Doors X Values+1
             # Check if Area of Persons Box is Equal to or Less Than the Doors Area
             # Tuple of Bottom Left X Value, and Bottom Right X Value
-            if (doorCoordinates[0] <= bottomLeft[0] <= doorCoordinates[2] and doorCoordinates[0] <= bottomRight[0] <= doorCoordinates[2] and personArea <= doorArea):
+            if (doorBottomLeft[0] <= personBottomLeft[0] <= doorBottomRight[0] and doorBottomLeft[0] <= personBottomRight[0] <= doorBottomRight[0] and personArea <= doorArea):
                 todaysDate = dt.datetime.now()
                 # Strftime Identifiers; %A Weekday, %H Hour, %M Minute, %p AM/PM
                 # Correct 24hr to 12hr Format
@@ -125,139 +141,141 @@ def video_processing():
                 else:
                     todaysDate = todaysDate.strftime("%A,  %H:%M AM")
 
-                todaysWeekday = todaysDate.strftime("%A").lower()
+                todaysWeekday = dt.datetime.now().strftime("%A").lower()
 
                 AvesDB = get_db_connection()
                 AvesCur = AvesDB.cursor()
 
                 # Grab DB Users
-                AvesCur.execute("SELECT * FROM roommates WHERE name=%s",body_face)
+                body_face = body_face.title()
+                AvesUser = get_statistics(body_face.title())
 
-                # Fetch User's Meeting Data
-                AvesUser = AvesCur.fetchone()
+                if (AvesUser["timeStamp"] == "Null"):
+                    sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
+                    val = (str(time.time()), body_face)
+                    AvesCur.execute(sql, val)
+                    AvesDB.commit()
 
-                # Index Information
-                # 0(ID), 1(Name), 2(Status), 3-9(Monday-Sunday), 10(LastEnter), 11(LastExit), 12(avgTimeAway), 13(avgTimeLeft), 14(timeStamp), 15(totaltimeAway), 16(timeInstance)
+                elif (AvesUser["timeStamp"] != "Null"):
+                    elapsedTime = time.time() - float(AvesUser["timeStamp"])
 
-                # If User Grabbed
-                if AvesUser:
-                    # Check Time Stamp Information
-                    if (AvesUser[14] == "Null"):
-                        sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
-                        val = (str(time.time()), body_face)
-                        AvesCur.execute(sql, val)
-                    elif (AvesUser[14] != "Null"):
-                        elapsedtime = time.time() - int(AvesUser[14])
-                        # If Time Elapsed >= 30 Seconds
-                        if elapsedtime >= 30:
-                            if (AvesUser[2] == "Inside"):
-                                # Swap Status
-                                sql = "UPDATE roommates SET status =%s WHERE name = %s"
-                                val = ("Outside", body_face)
-                                AvesCur.execute(sql, val)
+                    if (elapsedTime >= 30):
+                        
 
-                                # Update TimeStamp
-                                sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
-                                val = (str(time.time()), body_face)
-                                AvesCur.execute(sql, val)
+                        if (AvesUser["status"] == "Inside"):
+                            # Swap Status
+                            sql = "UPDATE roommates SET status =%s WHERE name = %s"
+                            val = ("Outside", body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                                # Update LastExit
-                                sql = "UPDATE roommates SET lastExit =%s WHERE name = %s"
-                                val = (todaysDate, body_face)
-                                AvesCur.execute(sql, val)
+                            # Update LastExit
+                            sql = "UPDATE roommates SET lastExit = %s WHERE name = %s"
+                            val = (todaysDate, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                                # Increment Weekday
-                                for i in range(3,10):
-                                    if (AvesUser[i] == todaysWeekday):
-                                        sql = "UPDATE roommates SET %s = %s + 1 WHERE name = %s"
-                                        val = (todaysWeekday, todaysWeekday, body_face)
-                                        AvesCur.execute(sql, val)
+                            # Increment Weekday
+                            sql = f"UPDATE roommates SET {todaysWeekday} = %s WHERE name = %s"
+                            value = AvesUser[todaysWeekday] + 1
+                            val = (value, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                                # Calculate Average Times Left/week
-                                # Take Total of Each Day / Current Day of Week
-                                # .weekday() Returns Number of Day in Week Starting at 0. Monday is 0, Sunday is 6.
+                            # Calculate Average Times Left/week
+                            # Take Total of Each Day / Current Day of Week
+                            # .weekday() Returns Number of Day in Week Starting at 0. Monday is 0, Sunday is 6.
 
-                                # Monday = 0, We Will Add 3 to this to match tuple indexes.
-                                currentDay = dt.datetime.now().weekday() + 3
-
-                                weekdayValues = []
-                                for day in range(currentDay):
-                                    weekdayValues.append(AvesUser[day])
+                            weekdayValues = []
+                            for day in range((dt.datetime.now().weekday())+1):
+                                weekdayValues.append(AvesUser[todaysWeekday])
 
                                 # Total Values in Weekday
-                                totalVal = 0
-                                for i in range(len(weekdayValues)):
-                                    totalVal += weekdayValues[i]
+                            totalVal = 0
+                            for i in range(len(weekdayValues)):
+                                totalVal += weekdayValues[i]
 
-                                # Calculate Avg Time Left
-                                # Total Values in WeekdayValues/len(weekdayValues)
-                                avgTimeLeft = totalVal/len(weekdayValues)
+                            # Calculate Avg Time Left
+                            # Total Values in WeekdayValues/len(weekdayValues)
+                            avgTimesLeft = totalVal/len(weekdayValues)
 
-                                # Update avgTimeLeft
-                                sql = "UPDATE roommates SET avgTimeLeft = %s WHERE name = %s"
-                                val = (avgTimeLeft, body_face)
-                                AvesCur.execute(sql, val)
+                            # Update avgTimeLeft
+                            sql = "UPDATE roommates SET avgTimesLeft = %s WHERE name = %s"
+                            val = (avgTimesLeft, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                                # Start Point to Calculate Avg Time Away
-                                # Epoch Seconds
-                                timeStart = time.time()
-                            else:
-                                # Swap Status
-                                AvesUser[2] = "Inside"
-                                sql = "UPDATE roommates SET status =%s WHERE name = %s"
-                                val = ("Outside", body_face)
-                                AvesCur.execute(sql, val)
+                            # Start Point to Calculate Avg Time Away
+                            # Epoch Seconds
+                            timeStart = time.time()
 
-                                # Update TimeStamp 
-                                sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
-                                val = (str(time.time()), body_face)
-                                AvesCur.execute(sql, val)
+                            # Reset TimeStamp
+                            sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
+                            val = (str(time.time()), body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
+                        else:
+                            # Swap Status
+                            sql = "UPDATE roommates SET status =%s WHERE name = %s"
+                            val = ("Outside", body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                                # Update LastEnter
-                                sql = "UPDATE roommates SET lastEnter =%s WHERE name = %s"
-                                val = (todaysDate, body_face)
-                                AvesCur.execute(sql, val)
+                            # Update LastEnter
+                            sql = "UPDATE roommates SET lastEnter =%s WHERE name = %s"
+                            val = (todaysDate, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                                # Start Point to Calculate Avg Time Away
-                                # Epoch Seconds
-                                timeEnd = time.time()
+                            # Start Point to Calculate Avg Time Away
+                            # Epoch Seconds
+                            timeEnd = time.time()
+
+                            # Update TimeStamp 
+                            sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
+                            val = (str(time.time()), body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
                         # Calculate Difference in Seconds
-                        timeDiff = timeEnd - timeStart
+                        try:
+                            timeDiff = timeEnd - timeStart
+                    
+                            # Add Elapsed Time to totalTimeAway
+                            sql = "UPDATE roommates SET totalTimeAway = totalTimeAway + %s WHERE name = %s"
+                            val = (timeDiff, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                        # Add Elapsed Time to totalTimeAway
-                        sql = "UPDATE roommates SET totalTimeAway = totalTimeAway + %s WHERE name = %s"
-                        val = (timeDiff, body_face)
-                        AvesCur.execute(sql, val)
+                            # Increment Time Instances
+                            sql = "UPDATE roommates SET timeInstance = timeInstance + %s WHERE name = %s"
+                            val = (1, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                        # Increment Time Instances
-                        sql = "UPDATE roommates SET timeInstance = timeInstance + %s WHERE name = %s"
-                        val = (1, body_face)
-                        AvesCur.execute(sql, val)
+                            # Calculate Average
+                            avgEpoch = AvesUser[3:10]/AvesUser[16]
 
-                        # Calculate Average
-                        avgEpoch = AvesUser[3:10]/AvesUser[16]
+                            # Conversion of Epoch Seconds to Readable Time
+                            # Epoch can be Converted to Datetime Object
+                            epochConversion = dt.datetime.fromtimestamp(avgEpoch)
 
-                        # Conversion of Epoch Seconds to Readable Time
-                        # Epoch can be Converted to Datetime Object
-                        epochConversion = dt.datetime.fromtimestamp(avgEpoch)
+                            # Conversion of 24hr format to 12hr Format
+                            if (epochConversion.hour > 12):
+                                epochConversion = epochConversion.replace(hour=todaysDate.hour - 12)
+                                epochConversion = epochConversion.strftime("%A,  %H:%M PM")
+                            else:
+                                epochConversion = epochConversion.strftime("%A,  %H:%M AM")
 
-                        # Conversion of 24hr format to 12hr Format
-                        if (epochConversion.hour > 12):
-                            epochConversion = epochConversion.replace(hour=todaysDate.hour - 12)
-                            epochConversion = epochConversion.strftime("%A,  %H:%M PM")
-                        else:
-                            epochConversion = epochConversion.strftime("%A,  %H:%M AM")
-
-                        # Update Avg Time Away
-                        sql = "UPDATE roommates SET lastExit = avgTimeAway + %s WHERE name = %s"
-                        val = (epochConversion, body_face)
-                        AvesCur.execute(sql, val)
+                            # Update Avg Time Away
+                            sql = "UPDATE roommates SET lastExit = avgTimeAway + %s WHERE name = %s"
+                            val = (epochConversion, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
+                        except:
+                            continue
                     else:
                         continue
-
-            # Commit Changes
-            AvesDB.commit()
 
         # Camera Display w/ Facial Tracking and Body Tracking
         cv2.imshow('Video', frame)
