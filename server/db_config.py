@@ -44,19 +44,18 @@ def initialize_database():
                 avgTimeAway VARCHAR(255),
                 avgTimesLeft INT,
                 timeStamp VARCHAR(255),
-                totalTimeAway INT,
-                timeInstances INT
+                totalTimeAway INT
             )
             """
             mycursor.execute(create_sql)
             
             # Insert new data
-            sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimesLeft, timeStamp, totalTimeAway, timeInstances) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimesLeft, timeStamp, totalTimeAway) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             val = [
-                ("Andrew", "Inside", 0, 0, 0, 0, 0, 0, 0, "test", "test", "test", 0, "Null", 0, 0),
-                ("Kamryn", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
-                ("Jordan", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0),
-                ("Nick", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0, 0)
+                ("Andrew", "Inside", 0, 0, 0, 0, 0, 0, 0, "test", "test", "test", 0, "Null", 0),
+                ("Kamryn", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0),
+                ("Jordan", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0),
+                ("Nick", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "Null", 0)
             ]
 
             mycursor.executemany(sql, val)
