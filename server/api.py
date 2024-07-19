@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
-from services import update_roommate_status
-from services import get_statistics
+from flask_socketio import SocketIO
+from services import update_roommate_status, get_statistics
 
 def create_app():
     app = Flask(__name__)
+    socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
 
     @app.route('/api/manualFix', methods=['POST'])
     def manual_fix():
@@ -28,4 +29,10 @@ def create_app():
         response = get_statistics(name)
         return jsonify(response), 200
 
-    return app
+    return app, socketio
+
+if __name__ == '__main__':
+    app, socketio = create_app()
+    video_thread = threading.Thread(target=video_processing)
+    video_thread.start()
+    socketio.run(app, debug=False, port=5000)

@@ -4,6 +4,7 @@ import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
 import { Line } from 'react-chartjs-2';
 import './App.css';
 import { Chart, registerables } from 'chart.js';
+import io from 'socket.io-client';
 
 Chart.register(...registerables);
 
@@ -15,6 +16,7 @@ const Statistic = ({ label, value }) => (
   </div>
 );
 
+const socket = io('http://localhost:5000');
 
 const Main = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -22,35 +24,47 @@ const Main = () => {
   const [kamrynData, setKamrynData] = useState({});
   const [jordanData, setJordanData] = useState({});
   const [nickData, setNickData] = useState({});
+  const [manualChange, setManualChange] = useState(1);
+  const [socketChange, setSocketChange] = useState(0);
 
-  useEffect(() => {
-    fetch('/api/stat?name=Andrew') // ? passes in the get request arg
-      .then(response => response.json())
-      .then(data => setAndrewData(data))
-      .catch(error => console.error('Error:', error));
-  }, []);
-  
-  useEffect(() => {
-    fetch('/api/stat?name=Kamryn')
-      .then(response => response.json())
-      .then(data => setKamrynData(data))
-      .catch(error => console.error('Error:', error));
-  }, []);
-  
-  useEffect(() => {
-    fetch('/api/stat?name=Jordan')
-      .then(response => response.json())
-      .then(data => setJordanData(data))
-      .catch(error => console.error('Error:', error));
-  }, []);
-  
-  useEffect(() => {
-    fetch('/api/stat?name=Nick')
-      .then(response => response.json())
-      .then(data => setNickData(data))
-      .catch(error => console.error('Error:', error));
-  }, []);
-  
+    useEffect(() => {
+      socket.on('db_change', data => {
+        setSocketChange(prev => prev + data); // Increment socketChange state to trigger re-fetch
+      });
+
+      return () => {
+        socket.off('db_change'); // Clean up the listener on component unmount
+      };
+    }, []);
+
+    useEffect(() => {
+      fetch('/api/stat?name=Andrew') // ? passes in the get request arg
+        .then(response => response.json())
+        .then(data => setAndrewData(data))
+        .catch(error => console.error('Error:', error));
+    }, [manualChange, socketChange]);
+    
+    useEffect(() => {
+      fetch('/api/stat?name=Kamryn')
+        .then(response => response.json())
+        .then(data => setKamrynData(data))
+        .catch(error => console.error('Error:', error));
+    }, [manualChange, socketChange]);
+    
+    useEffect(() => {
+      fetch('/api/stat?name=Jordan')
+        .then(response => response.json())
+        .then(data => setJordanData(data))
+        .catch(error => console.error('Error:', error));
+    }, [manualChange, socketChange]);
+    
+    useEffect(() => {
+      fetch('/api/stat?name=Nick')
+        .then(response => response.json())
+        .then(data => setNickData(data))
+        .catch(error => console.error('Error:', error));
+    }, [manualChange, socketChange]);
+    
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
@@ -122,7 +136,6 @@ const Main = () => {
       },
     ],
   };
-  
   
   const statistics = {
     Andrew: {
@@ -201,7 +214,6 @@ const Main = () => {
       default:
         return;
     }
-    
     fetch('/api/manualFix', {
         method: 'POST',
         headers: {
@@ -216,6 +228,12 @@ const Main = () => {
     .catch(error => {
         console.error('Error:', error);
     });
+
+    if(manualChange == 1){
+      setManualChange(0);
+    }else if(manualChange == 0){
+      setManualChange(1);
+    }
   };
 
   return (
@@ -243,7 +261,7 @@ const Main = () => {
         <button onClick={() => handleManualFix('Andrew')} className="btn btn-moving-gradient btn-moving-gradient--blue mt-12">Manual fix <BuildOutlinedIcon style={{ fontSize: 25, color: 'white' }}/></button>
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
-      <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Kamryn</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
+      <h1 className={`font-medium font-custom text-4xl ${kamrynData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Kamryn</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Kamryn" className="max-w-full max-h-full" />
         </div>
@@ -259,7 +277,7 @@ const Main = () => {
         <button onClick={() => handleManualFix('Kamryn')} className="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix <BuildOutlinedIcon style={{ fontSize: 25, color: 'white' }}/> </button>
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
-      <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Jordan</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
+      <h1 className={`font-medium font-custom text-4xl ${jordanData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Jordan</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Jordan" className="max-w-full max-h-full" />
         </div>
@@ -275,7 +293,7 @@ const Main = () => {
         <button onClick={() => handleManualFix('Jordan')} className="btn btn-moving-gradient btn-moving-gradient--blue mt-12"> Manual fix <BuildOutlinedIcon style={{ fontSize: 25, color: 'white' }}/></button>
       </div>
       <div className="md:w-1/4 w-full flex flex-col items-center">
-      <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Nick</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
+      <h1 className={`font-medium font-custom text-4xl ${nickData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Nick</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src="path/to/your/image.jpg" alt="Nick" className="max-w-full max-h-full" />
         </div>

@@ -10,6 +10,7 @@ import time
 import datetime as dt
 from db_config import get_db_connection
 from services import get_statistics
+from flask_socketio import SocketIO, emit
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
@@ -155,7 +156,7 @@ def video_processing():
                     val = (str(time.time()), body_face)
                     AvesCur.execute(sql, val)
                     AvesDB.commit()
-
+                    socketio.emit('db_change', 1, broadcast=True)
                 elif (AvesUser["timeStamp"] != "Null"):
                     elapsedTime = time.time() - float(AvesUser["timeStamp"])
 
@@ -198,6 +199,7 @@ def video_processing():
                             val = (str(time.time()), body_face)
                             AvesCur.execute(sql, val)
                             AvesDB.commit()
+                            socketio.emit('db_change', 1, broadcast=True)
                             # --------------------------------------------------------------------------------- #
                         elif (AvesUser["status"] == "Outside"):
 
@@ -222,11 +224,8 @@ def video_processing():
                             val = (str(time.time()), body_face)
                             AvesCur.execute(sql, val)
                             AvesDB.commit()
+                            socketio.emit('db_change', 1, broadcast=True)
                             # --------------------------------------------------------------------------------- #
-
-
-                
-
         # Camera Display w/ Facial Tracking and Body Tracking
         cv2.imshow('Video', frame)
 
@@ -236,9 +235,9 @@ def video_processing():
     cap.release()
     cv2.destroyAllWindows()
 
-app = create_app()
 
 if __name__ == '__main__':
-    video_thread = threading.Thread(target=video_processing)
-    video_thread.start()
-    app.run(debug=False, port=5000)
+    app, socketio = create_app()
+    socketio_thread = threading.Thread(target=video_processing, args=(socketio,))
+    socketio_thread.start()
+    socketio.run(app, port=5000)
