@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO
-from services import update_roommate_status, get_statistics
+from services import update_roommate_status, get_statistics, get_image
 
 def create_app():
     app = Flask(__name__)
@@ -29,6 +29,16 @@ def create_app():
         response = get_statistics(name)
         return jsonify(response), 200
 
+    @app.route('api/image', methods=['GET'])
+    def pull_image():
+        name = request.args.get('name')
+        if not name:
+            return jsonify({"error": "Missing 'name'"}), 400
+        return get_image(name)
+        
+        
+        
+        
     return app, socketio
 
 if __name__ == '__main__':

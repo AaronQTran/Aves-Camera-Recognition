@@ -1,8 +1,12 @@
 import json
 import threading
+import os
+from flask import jsonify, send_file
 import mysql.connector
 from db_config import get_db_connection
 json_lock = threading.Lock()
+
+dir = './images/'
 
 def update_roommate_status(name, new_status):
     connection = get_db_connection()
@@ -51,3 +55,21 @@ def get_statistics(name):
         }
     else:
         return {"error": "No data found for the specified name"}
+    
+def get_image(name):
+    if(name == 'Andrew'):
+        image_path = dir + 'Andrew.jpg'
+    elif(name == 'Kamryn'):
+        image_path = dir + 'Kamryn.jpg'
+    elif(name == 'Jordan'):
+        image_path = dir + 'Jordan.jpg'
+    elif(name == 'Nick'):
+        image_path = dir + 'Nick.jpg'
+    else:
+        return jsonify({"error": "Invalid name"}), 400
+        
+    try:
+        return send_file(image_path, mimetype='image/jpeg')
+    except FileNotFoundError:
+        return jsonify({"error": "Image not found"}), 404
+    

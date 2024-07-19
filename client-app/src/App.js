@@ -24,6 +24,10 @@ const Main = () => {
   const [kamrynData, setKamrynData] = useState({});
   const [jordanData, setJordanData] = useState({});
   const [nickData, setNickData] = useState({});
+  const [andrewImage, setAndrewImage] = useState('')
+  const [kamrynImage, setKamrymImage] = useState('')
+  const [jordanImage, setJordanImage] = useState('')
+  const [nickImage, setNickImage] = useState('')
   const [manualChange, setManualChange] = useState(1);
   const [socketChange, setSocketChange] = useState(0);
 
@@ -42,12 +46,28 @@ const Main = () => {
         .then(response => response.json())
         .then(data => setAndrewData(data))
         .catch(error => console.error('Error:', error));
+
+      fetch('/api/image?name=Andrew')// => call to api, api calls to func, func calls to image path, flask send_file converts path to img url, use url here
+        .then(response => response.blob())
+        .then(images => {
+          let imgStatus = URL.createObjectURL(images);
+          setAndrewImage(imgStatus);
+        })
+        .catch(error => console.error('Error:', error));
     }, [manualChange, socketChange]);
     
     useEffect(() => {
       fetch('/api/stat?name=Kamryn')
         .then(response => response.json())
         .then(data => setKamrynData(data))
+        .catch(error => console.error('Error:', error));
+
+      fetch('/api/image?name=Kamryn')// => call to api, api calls to func, func calls to image path, flask send_file converts path to img url, use url here
+        .then(response => response.blob())
+        .then(images => {
+          let imgStatus = URL.createObjectURL(images);
+          setKamrynImage(imgStatus);
+        })
         .catch(error => console.error('Error:', error));
     }, [manualChange, socketChange]);
     
@@ -56,12 +76,28 @@ const Main = () => {
         .then(response => response.json())
         .then(data => setJordanData(data))
         .catch(error => console.error('Error:', error));
+
+      fetch('/api/image?name=Jordan')// => call to api, api calls to func, func calls to image path, flask send_file converts path to img url, use url here
+        .then(response => response.blob())
+        .then(images => {
+          let imgStatus = URL.createObjectURL(images);
+          setJordanImage(imgStatus);
+        })
+        .catch(error => console.error('Error:', error));
     }, [manualChange, socketChange]);
     
     useEffect(() => {
       fetch('/api/stat?name=Nick')
         .then(response => response.json())
         .then(data => setNickData(data))
+        .catch(error => console.error('Error:', error));
+
+      fetch('/api/image?name=Nick')// => call to api, api calls to func, func calls to image path, flask send_file converts path to img url, use url here
+        .then(response => response.blob())
+        .then(images => {
+          let imgStatus = URL.createObjectURL(images);
+          setNickImage(imgStatus);
+        })
         .catch(error => console.error('Error:', error));
     }, [manualChange, socketChange]);
     
@@ -247,7 +283,7 @@ const Main = () => {
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
         <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Andrew</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
-          <img src="path/to/your/image.jpg" alt="Andrew" className="max-w-full max-h-full" />
+          <img src={andrewImage} alt="Andrew" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
           <Line data={andrewDataObject} options={options} />
@@ -263,7 +299,7 @@ const Main = () => {
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
       <h1 className={`font-medium font-custom text-4xl ${kamrynData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Kamryn</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
-          <img src="path/to/your/image.jpg" alt="Kamryn" className="max-w-full max-h-full" />
+          <img src={kamrynImage} alt="Kamryn" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
           <Line data={kamrynDataObject} options={options} />
@@ -279,7 +315,7 @@ const Main = () => {
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
       <h1 className={`font-medium font-custom text-4xl ${jordanData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Jordan</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
-          <img src="path/to/your/image.jpg" alt="Jordan" className="max-w-full max-h-full" />
+          <img src={jordanImage} alt="Jordan" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
           <Line data={jordanDataObject} options={options} />
@@ -295,7 +331,7 @@ const Main = () => {
       <div className="md:w-1/4 w-full flex flex-col items-center">
       <h1 className={`font-medium font-custom text-4xl ${nickData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Nick</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
         <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
-          <img src="path/to/your/image.jpg" alt="Nick" className="max-w-full max-h-full" />
+          <img src={nickImage} alt="Nick" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
           <Line data={nickDataObject} options={options} />

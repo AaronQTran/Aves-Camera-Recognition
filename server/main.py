@@ -11,7 +11,9 @@ import datetime as dt
 from db_config import get_db_connection
 from services import get_statistics
 from flask_socketio import SocketIO, emit
+import os
 
+dir = './images'
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
 
@@ -150,6 +152,28 @@ def video_processing():
                 # Grab DB Users
                 body_face = body_face.title()
                 AvesUser = get_statistics(body_face.title())
+                
+                # send jpg to images folder
+                if(body_face == 'Andrew'):
+                    frame_path = os.path.join(dir, f'Andrew.jpg')
+                    if(os.path.exists(frame_path)):
+                        os.remove(frame_path)
+                    cv2.imwrite(frame_path, frame)
+                elif(body_face == 'Kamryn'):
+                    frame_path = os.path.join(dir, f'Kamryn.jpg')
+                    if(os.path.exists(frame_path)):
+                        os.remove(frame_path)
+                    cv2.imwrite(frame_path, frame)
+                elif(body_face == 'Jordan'):
+                    frame_path = os.path.join(dir, f'Jordan.jpg')
+                    if(os.path.exists(frame_path)):
+                        os.remove(frame_path)
+                    cv2.imwrite(frame_path, frame)
+                elif(body_face == 'Nick'):
+                    frame_path = os.path.join(dir, f'Nick.jpg')
+                    if(os.path.exists(frame_path)):
+                        os.remove(frame_path)
+                    cv2.imwrite(frame_path, frame)
 
                 if (AvesUser["timeStamp"] == "Null"):
                     sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
