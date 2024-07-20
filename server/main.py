@@ -11,6 +11,7 @@ import datetime as dt
 from db_config import get_db_connection
 from services import get_statistics
 from flask_socketio import SocketIO, emit
+import time
 import os
 
 dir = './images'
@@ -20,7 +21,7 @@ print(f"Using device: {device}")
 mtcnn = MTCNN(image_size=160, margin=20, keep_all=True, device=device)
 resnet = InceptionResnetV1(pretrained='vggface2').eval().to(device)
 
-cap = cv2.VideoCapture("C:/Users/kamry/Desktop/AvesCameraAI/Aves-Camera-Recognition/KamTestFinal.mp4")
+cap = cv2.VideoCapture('../KamTestFinal.mp4')
 
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -181,14 +182,14 @@ def video_processing():
                     val = (str(time.time()), body_face)
                     AvesCur.execute(sql, val)
                     AvesDB.commit()
-                    socketio.emit('db_change', 1, broadcast=True)
+                    socketio.emit('db_change', 1)
                 elif (AvesUser["timeStamp"] != "Null"):
                     elapsedTime = time.time() - float(AvesUser["timeStamp"])
 
                     if (elapsedTime >= 30):
 
                         if (AvesUser["status"] == "Inside"):
-
+                            print('inside')
                             # Swap Status --------------------------------------------------------------------- #
                             sql = "UPDATE roommates SET status =%s WHERE name = %s"
                             val = ("Outside", body_face)
@@ -241,11 +242,12 @@ def video_processing():
                             val = (str(time.time()), body_face)
                             AvesCur.execute(sql, val)
                             AvesDB.commit()
-                            socketio.emit('db_change', 1, broadcast=True)
+                            socketio.emit('db_change', 1)
                             # --------------------------------------------------------------------------------- #
 
 
                             if(AvesUser["check1"] == 0):
+                                print('check1 within inside')
                                 sql = "UPDATE roommates SET timeStart =%s WHERE name = %s"
                                 val = (time.time(), body_face)
                                 AvesCur.execute(sql, val)
@@ -255,11 +257,9 @@ def video_processing():
                                 val = (1, body_face)
                                 AvesCur.execute(sql, val)
                                 AvesDB.commit()
-                            
-
 
                         elif (AvesUser["status"] == "Outside"):
-
+                            print('outside')
                             # Swap Status --------------------------------------------------------------------- #
                             sql = "UPDATE roommates SET status =%s WHERE name = %s"
                             val = ("Inside", body_face)
@@ -281,13 +281,14 @@ def video_processing():
                             val = (str(time.time()), body_face)
                             AvesCur.execute(sql, val)
                             AvesDB.commit()
-                            socketio.emit('db_change', 1, broadcast=True)
+                            socketio.emit('db_change', 1)
                             # --------------------------------------------------------------------------------- #
 
                             if (AvesUser["check2"] == 0):
-                                print("Test")
+                                print("check2 within outside")
                                 sql = "UPDATE roommates SET timeEnd =%s WHERE name = %s"
                                 val = (time.time(), body_face)
+                                print(val)
                                 AvesCur.execute(sql, val)
                                 AvesDB.commit()
 
@@ -295,8 +296,9 @@ def video_processing():
                                 val = (1, body_face)
                                 AvesCur.execute(sql, val)
                                 AvesDB.commit()
-
+                                time.sleep(12)
                 if (AvesUser["check1"] == 1 and AvesUser["check2"] == 1):
+                            print('check1 and check2 if')
                             timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
 
                             epochConversion = dt.datetime.fromtimestamp(timeDiff)
@@ -355,6 +357,6 @@ def video_processing():
 
 if __name__ == '__main__':
     app, socketio = create_app()
-    socketio_thread = threading.Thread(target=video_processing, args=(socketio,))
+    socketio_thread = threading.Thread(target=video_processing)
     socketio_thread.start()
     socketio.run(app, port=5000)

@@ -29,7 +29,7 @@ def create_app():
         response = get_statistics(name)
         return jsonify(response), 200
 
-    @app.route('api/image', methods=['GET'])
+    @app.route('/api/image', methods=['GET'])
     def pull_image():
         name = request.args.get('name')
         if not name:

@@ -25,7 +25,7 @@ const Main = () => {
   const [jordanData, setJordanData] = useState({});
   const [nickData, setNickData] = useState({});
   const [andrewImage, setAndrewImage] = useState('')
-  const [kamrynImage, setKamrymImage] = useState('')
+  const [kamrynImage, setKamrynImage] = useState('')
   const [jordanImage, setJordanImage] = useState('')
   const [nickImage, setNickImage] = useState('')
   const [manualChange, setManualChange] = useState(1);
@@ -265,11 +265,12 @@ const Main = () => {
         console.error('Error:', error);
     });
 
-    if(manualChange == 1){
+    if(manualChange === 1) {
       setManualChange(0);
-    }else if(manualChange == 0){
+    } else if(manualChange === 0) {
       setManualChange(1);
     }
+
   };
 
   return (
@@ -349,5 +350,3 @@ const Main = () => {
 };
 
 export default Main;
-
-
