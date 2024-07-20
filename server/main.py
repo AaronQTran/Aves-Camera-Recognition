@@ -95,7 +95,7 @@ def video_processing():
         # Detection if Tracked Person is Within Door Border
         # Not Implemented, but Placeholder for Door Coordinates System?
         
-        
+        weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
         # Find Area of Door Box
         # When Coordinates Implemented
@@ -175,6 +175,7 @@ def video_processing():
                         os.remove(frame_path)
                     cv2.imwrite(frame_path, frame)
 
+
                 if (AvesUser["timeStamp"] == "Null"):
                     sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
                     val = (str(time.time()), body_face)
@@ -212,11 +213,28 @@ def video_processing():
                             AvesDB.commit()
                             # --------------------------------------------------------------------------------- #
 
+
                             # Avg Times Left/week ------------------------------------------------------------- #
+                            totalTime = 0
+
+                            # Iterate Through Weekdays, Total Amount of Times Left - Resets Each Week
+                            weekdayNum = dt.datetime.now().weekday()
+                            for x in range(weekdayNum + 1):
+                                totalTime += AvesUser[weekdays[x]]
+
+                            # Calculate AvgTimesLeft
+                            avgTimesLeft = totalTime/(weekdayNum+1)
+                            # Update avgTimesLeft
+                            sql = "UPDATE roommates SET avgTimesLeft = %s WHERE name = %s"
+                            val = (avgTimesLeft, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
                             
-                            
+                            # Reset Weekday Values Sunday at Midnight
+                            # >>>> Bottom Code Set
 
                             # --------------------------------------------------------------------------------- #
+
 
                             # Reset TimeStamp ----------------------------------------------------------------- #
                             sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
@@ -225,6 +243,21 @@ def video_processing():
                             AvesDB.commit()
                             socketio.emit('db_change', 1, broadcast=True)
                             # --------------------------------------------------------------------------------- #
+
+
+                            if(AvesUser["check1"] == 0):
+                                sql = "UPDATE roommates SET timeStart =%s WHERE name = %s"
+                                val = (time.time(), body_face)
+                                AvesCur.execute(sql, val)
+                                AvesDB.commit()
+
+                                sql = "UPDATE roommates SET check1 =%s WHERE name = %s"
+                                val = (1, body_face)
+                                AvesCur.execute(sql, val)
+                                AvesDB.commit()
+                            
+
+
                         elif (AvesUser["status"] == "Outside"):
 
                             # Swap Status --------------------------------------------------------------------- #
@@ -250,6 +283,66 @@ def video_processing():
                             AvesDB.commit()
                             socketio.emit('db_change', 1, broadcast=True)
                             # --------------------------------------------------------------------------------- #
+
+                            if (AvesUser["check2"] == 0):
+                                print("Test")
+                                sql = "UPDATE roommates SET timeEnd =%s WHERE name = %s"
+                                val = (time.time(), body_face)
+                                AvesCur.execute(sql, val)
+                                AvesDB.commit()
+
+                                sql = "UPDATE roommates SET check2 =%s WHERE name = %s"
+                                val = (1, body_face)
+                                AvesCur.execute(sql, val)
+                                AvesDB.commit()
+
+                if (AvesUser["check1"] == 1 and AvesUser["check2"] == 1):
+                            timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
+
+                            epochConversion = dt.datetime.fromtimestamp(timeDiff)
+
+                            formattedEpoch = epochConversion.strftime("%I:%M")
+
+                            sql = "UPDATE roommates SET avgTimeAway =%s WHERE name = %s"
+                            val = (formattedEpoch, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
+
+                            # Reset Check1 & Check2
+                            sql = "UPDATE roommates SET check1 =%s WHERE name = %s"
+                            val = (0, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
+                            
+                            sql = "UPDATE roommates SET check2 =%s WHERE name = %s"
+                            val = (0, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
+
+                            # Reset timeStart and timeEnd
+                            sql = "UPDATE roommates SET timeStart = %s WHERE name = %s"
+                            val = (0, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
+                            
+                            sql = "UPDATE roommates SET timeEnd =%s WHERE name = %s"
+                            val = (0, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
+
+        # Running Every Frame
+        # Check if Time is Midnight on a Sunday
+        # If So, Reset Weekday Values
+        resetDate = dt.datetime.now()
+        # If Todays Date is Sunday(6) and Hour is Midnight(24)
+        if (resetDate.weekday() == 6 and resetDate.hour == 24):
+            # 7 Days in Week
+            for x in range(7):
+                sql = f"UPDATE roommates SET {weekdays[x]} = 0"
+                AvesCur.execute(sql)
+                AvesDB.commit()
+
+
         # Camera Display w/ Facial Tracking and Body Tracking
         cv2.imshow('Video', frame)
 
