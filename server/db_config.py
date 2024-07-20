@@ -47,8 +47,8 @@ def initialize_database():
                 totalTimeAway INT,
                 check1 INT,
                 check2 INT,
-                timeStart FLOAT,
-                timeEnd FLOAT
+                timeStart DOUBLE,
+                timeEnd DOUBLE
             )
             """
             mycursor.execute(create_sql)

@@ -141,9 +141,9 @@ def video_processing():
                 # Correct 24hr to 12hr Format
                 if (todaysDate.hour > 12):
                     todaysDate = todaysDate.replace(hour=todaysDate.hour - 12)
-                    todaysDate = todaysDate.strftime("%A,  %H:%M PM")
+                    todaysDate = todaysDate.strftime("%a,  %H:%M PM")
                 else:
-                    todaysDate = todaysDate.strftime("%A,  %H:%M AM")
+                    todaysDate = todaysDate.strftime("%a,  %H:%M AM")
 
                 todaysWeekday = dt.datetime.now().strftime("%A").lower()
 
@@ -249,7 +249,9 @@ def video_processing():
                             if(AvesUser["check1"] == 0):
                                 print('check1 within inside')
                                 sql = "UPDATE roommates SET timeStart =%s WHERE name = %s"
-                                val = (time.time(), body_face)
+                                time1 = time.time()
+                                print(time1)
+                                val = (time1, body_face)
                                 AvesCur.execute(sql, val)
                                 AvesDB.commit()
 
@@ -287,7 +289,9 @@ def video_processing():
                             if (AvesUser["check2"] == 0):
                                 print("check2 within outside")
                                 sql = "UPDATE roommates SET timeEnd =%s WHERE name = %s"
-                                val = (time.time(), body_face)
+                                time2 = time.time()
+                                print(time2)
+                                val = (time2, body_face)
                                 print(val)
                                 AvesCur.execute(sql, val)
                                 AvesDB.commit()
@@ -297,16 +301,18 @@ def video_processing():
                                 AvesCur.execute(sql, val)
                                 AvesDB.commit()
                                 time.sleep(12)
+
                 if (AvesUser["check1"] == 1 and AvesUser["check2"] == 1):
-                            print('check1 and check2 if')
                             timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
+                            timeDiff = dt.timedelta(seconds=timeDiff)
 
-                            epochConversion = dt.datetime.fromtimestamp(timeDiff)
 
-                            formattedEpoch = epochConversion.strftime("%I:%M")
+                            hours, remainder = divmod(timeDiff.total_seconds(), 3600)
+                            minutes = remainder // 60
+                            formattedTime = f"{int(hours):02}:{int(minutes):02}"
 
                             sql = "UPDATE roommates SET avgTimeAway =%s WHERE name = %s"
-                            val = (formattedEpoch, body_face)
+                            val = (formattedTime, body_face)
                             AvesCur.execute(sql, val)
                             AvesDB.commit()
 
