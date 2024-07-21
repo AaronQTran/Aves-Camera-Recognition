@@ -139,11 +139,16 @@ def video_processing():
                 todaysDate = dt.datetime.now()
                 # Strftime Identifiers; %A Weekday, %H Hour, %M Minute, %p AM/PM
                 # Correct 24hr to 12hr Format
-                if (todaysDate.hour > 12):
+                if todaysDate.hour == 0:
+                    todaysDate = todaysDate.replace(hour=12)
+                    todaysDate = todaysDate.strftime("%a, %I:%M AM")
+                elif todaysDate.hour == 12:
+                    todaysDate = todaysDate.strftime("%a, %I:%M PM")
+                elif todaysDate.hour > 12:
                     todaysDate = todaysDate.replace(hour=todaysDate.hour - 12)
-                    todaysDate = todaysDate.strftime("%a,  %H:%M PM")
+                    todaysDate = todaysDate.strftime("%a, %I:%M PM")
                 else:
-                    todaysDate = todaysDate.strftime("%a,  %H:%M AM")
+                    todaysDate = todaysDate.strftime("%a, %I:%M AM")
 
                 todaysWeekday = dt.datetime.now().strftime("%A").lower()
 
@@ -292,15 +297,43 @@ def video_processing():
                                 time.sleep(12)
 
                 if (AvesUser["check1"] == 1 and AvesUser["check2"] == 1):
+                            # Calculate Epoch Time Difference
                             timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
-                            timeDiff = dt.timedelta(seconds=timeDiff)
 
-                            # Add timeDiff to mySQL List of TImes
+                            # Add That Difference to totalTimeAway
+                            # 1. Pull Current Total
+                            # 2. Add timeDiff to that Total
+                            # 3. Update
+                            currentDiff = AvesUser["totalTimeAway"]
+                            diff = timeDiff + currentDiff
 
-                            # Find Median timeDiff
+                            sql = "UPDATE roommates SET totalTimeAway =%s WHERE name = %s"
+                            val = (diff, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
 
-                            # Input Median Below V
-                            hours, remainder = divmod(timeDiff.total_seconds(), 3600)
+                            # =================================================================== #
+
+                            # Increment Instances for Dividend Now
+                            instances = AvesUser["timeInstances"]
+                            instances += 1
+                            
+                            # Update Time Instances
+                            sql = "UPDATE roommates SET timeInstances =%s WHERE name = %s"
+                            val = (instances, body_face)
+                            AvesCur.execute(sql, val)
+                            AvesDB.commit()
+
+                            # =================================================================== #
+
+                            # Calcualte Mean Epoch
+                            epochTotal = AvesUser["totalTimeAway"]
+                            dividend = AvesUser["timeInstances"]
+
+                            meanEpoch = epochTotal/dividend
+
+                            # Now Input Mean Epoch into Conversion
+                            hours, remainder = divmod(meanEpoch.total_seconds(), 3600)
                             minutes = remainder // 60
 
                             if hours == 0:

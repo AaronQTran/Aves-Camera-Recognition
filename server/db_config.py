@@ -44,22 +44,23 @@ def initialize_database():
                 avgTimeAway VARCHAR(255),
                 avgTimesLeft INT,
                 timeStamp VARCHAR(255),
-                totalTimeAway INT,
+                totalTimeAway DOUBLE,
                 check1 INT,
                 check2 INT,
                 timeStart DOUBLE,
-                timeEnd DOUBLE
+                timeEnd DOUBLE,
+                timeInstances INT
             )
             """
             mycursor.execute(create_sql)
             
             # Insert new data
-            sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimesLeft, timeStamp, totalTimeAway, check1, check2, timeStart, timeEnd) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s ,%s, %s, %s)"
+            sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimesLeft, timeStamp, totalTimeAway, check1, check2, timeStart, timeEnd, timeInstances) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s ,%s, %s, %s, %s)"
             val = [
-                ("Andrew", "Inside", 0, 0, 0, 0, 0, 0, 0, "test", "test", "test", 0, "0", 0, 0, 0, 0, 0),
-                ("Kamryn", "Inside", 5, 2, 6, 2, 9, 2, 1, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0),
-                ("Jordan", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0),
-                ("Nick", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0)
+                ("Andrew", "Inside", 0, 0, 0, 0, 0, 0, 0, "test", "test", "test", 0, "0", 0, 0, 0, 0, 0, 0),
+                ("Kamryn", "Inside", 5, 2, 6, 2, 9, 2, 1, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0, 0),
+                ("Jordan", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0, 0),
+                ("Nick", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0, 0)
             ]
 
             mycursor.executemany(sql, val)
