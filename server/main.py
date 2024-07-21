@@ -176,16 +176,8 @@ def video_processing():
                         os.remove(frame_path)
                     cv2.imwrite(frame_path, frame)
 
-
-                if (AvesUser["timeStamp"] == "Null"):
-                    sql = "UPDATE roommates SET timeStamp =%s WHERE name = %s"
-                    val = (str(time.time()), body_face)
-                    AvesCur.execute(sql, val)
-                    AvesDB.commit()
-                    socketio.emit('db_change', 1)
-                elif (AvesUser["timeStamp"] != "Null"):
+                if (AvesUser["timeStamp"] != "Null"):
                     elapsedTime = time.time() - float(AvesUser["timeStamp"])
-
                     if (elapsedTime >= 30):
 
                         if (AvesUser["status"] == "Inside"):
@@ -250,7 +242,6 @@ def video_processing():
                                 print('check1 within inside')
                                 sql = "UPDATE roommates SET timeStart =%s WHERE name = %s"
                                 time1 = time.time()
-                                print(time1)
                                 val = (time1, body_face)
                                 AvesCur.execute(sql, val)
                                 AvesDB.commit()
@@ -290,9 +281,7 @@ def video_processing():
                                 print("check2 within outside")
                                 sql = "UPDATE roommates SET timeEnd =%s WHERE name = %s"
                                 time2 = time.time()
-                                print(time2)
                                 val = (time2, body_face)
-                                print(val)
                                 AvesCur.execute(sql, val)
                                 AvesDB.commit()
 
@@ -306,10 +295,18 @@ def video_processing():
                             timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
                             timeDiff = dt.timedelta(seconds=timeDiff)
 
+                            # Add timeDiff to mySQL List of TImes
 
+                            # Find Median timeDiff
+
+                            # Input Median Below V
                             hours, remainder = divmod(timeDiff.total_seconds(), 3600)
                             minutes = remainder // 60
-                            formattedTime = f"{int(hours):02}:{int(minutes):02}"
+
+                            if hours == 0:
+                                formattedTime = f"{int(minutes)}m"
+                            else:
+                                formattedTime = f"{int(hours):02}h {int(minutes):02}m"
 
                             sql = "UPDATE roommates SET avgTimeAway =%s WHERE name = %s"
                             val = (formattedTime, body_face)
