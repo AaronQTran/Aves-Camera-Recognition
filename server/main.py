@@ -8,6 +8,7 @@ from YoloV5STracking.body import detectBody
 import json
 import time
 import datetime as dt
+from datetime import timedelta
 from db_config import get_db_connection
 from services import get_statistics
 from flask_socketio import SocketIO, emit
@@ -297,49 +298,52 @@ def video_processing():
                                 time.sleep(12)
 
                 if (AvesUser["check1"] == 1 and AvesUser["check2"] == 1):
-                            # Calculate Epoch Time Difference
-                            timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
+                        # Calculate Epoch Time Difference
+                        timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
 
-                            # Add That Difference to totalTimeAway
-                            # 1. Pull Current Total
-                            # 2. Add timeDiff to that Total
-                            # 3. Update
-                            currentDiff = AvesUser["totalTimeAway"]
-                            diff = timeDiff + currentDiff
+                        # Add That Difference to totalTimeAway
+                        # 1. Pull Current Total
+                        # 2. Add timeDiff to that Total
+                        # 3. Update
+                        currentDiff = AvesUser["totalTimeAway"]
+                        diff = timeDiff + currentDiff
 
-                            sql = "UPDATE roommates SET totalTimeAway =%s WHERE name = %s"
-                            val = (diff, body_face)
-                            AvesCur.execute(sql, val)
-                            AvesDB.commit()
+                        sql = "UPDATE roommates SET totalTimeAway =%s WHERE name = %s"
+                        val = (diff, body_face)
+                        AvesCur.execute(sql, val)
+                        AvesDB.commit()
+                        # =================================================================== #
 
-                            # =================================================================== #
+                        # Increment Instances for Dividend Now
+                        instances = AvesUser["timeInstances"]
+                        instances = instances + 1
 
-                            # Increment Instances for Dividend Now
-                            instances = AvesUser["timeInstances"]
-                            instances += 1
-                            
-                            # Update Time Instances
-                            sql = "UPDATE roommates SET timeInstances =%s WHERE name = %s"
-                            val = (instances, body_face)
-                            AvesCur.execute(sql, val)
-                            AvesDB.commit()
+                        # Update Time Instances
+                        sql = "UPDATE roommates SET timeInstances =%s WHERE name = %s"
+                        val = (instances, body_face)
+                        AvesCur.execute(sql, val)
+                        AvesDB.commit()
 
-                            # =================================================================== #
+                        # =================================================================== #
 
-                            # Calcualte Mean Epoch
-                            epochTotal = AvesUser["totalTimeAway"]
-                            dividend = AvesUser["timeInstances"]
+                        # Calcualte Mean Epoch
+                        epochTotal = AvesUser["totalTimeAway"]
+                        dividend = AvesUser["timeInstances"]
 
+                        if (dividend == 0):
+                            dividend = 1
+                            meanEpoch = epochTotal/dividend
+                        else:
                             meanEpoch = epochTotal/dividend
 
-                            # Now Input Mean Epoch into Conversion
-                            hours, remainder = divmod(meanEpoch.total_seconds(), 3600)
-                            minutes = remainder // 60
+                        # Now Input Mean Epoch into Conversion
+                        hours, remainder = divmod(meanEpoch, 3600)
+                        minutes = remainder // 60
 
-                            if hours == 0:
-                                formattedTime = f"{int(minutes)}m"
-                            else:
-                                formattedTime = f"{int(hours):02}h {int(minutes):02}m"
+                        if hours == 0:
+                            formattedTime = f"{int(minutes)}m"
+                        else:
+                            formattedTime = f"{int(hours):02}h {int(minutes):02}m"
 
                             sql = "UPDATE roommates SET avgTimeAway =%s WHERE name = %s"
                             val = (formattedTime, body_face)

@@ -26,7 +26,7 @@ def get_statistics(name):
     cursor = connection.cursor()
 
     select_sql = """
-    SELECT status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, avgTimesLeft, lastEnter, lastExit, avgTimeAway,  timeStamp, totalTimeAway, check1, check2, timeStart, timeEnd
+    SELECT status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, avgTimesLeft, lastEnter, lastExit, avgTimeAway,  timeStamp, totalTimeAway, check1, check2, timeStart, timeEnd, timeInstances
     FROM roommates
     WHERE name = %s
     """
@@ -55,7 +55,8 @@ def get_statistics(name):
             "check1" : result[14],
             "check2" : result[15],
             "timeStart" : result[16],
-            "timeEnd" : result[17]
+            "timeEnd" : result[17],
+            "timeInstances" : result[18]
         }
     else:
         return {"error": "No data found for the specified name"}
