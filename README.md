@@ -72,7 +72,7 @@ A step by step series of examples that tell you how to get a development env run
 Identifying door coordinates
 
 ```
-Run originalCode.py in the YoloV5 folder to pull up the mouse positioning coordinate system. This will display the 4 coordinates that will represent your door.
+Run originalCode.py in the YoloV5 folder to pull up the mouse positioning coordinate system. This will display the x, y coordinates of your mouse cursor due to a function within this portion of code. Take your cursor to the upper left (x,y) set of the door and bottom right (x,y) set of the door and take note of them. Then go to main.py, line 105 has a list of 4 integers that should be updated in this order [upper right x val, uper right y val, bottom left x val, bottom left y val]. And then the coordinates are good to go.
 ```
 
 Rapid face imaging taking
