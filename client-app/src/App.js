@@ -283,7 +283,7 @@ const Main = () => {
       )}
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
         <h1 className={`font-medium font-custom text-4xl ${andrewData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Andrew</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
-        <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
+        <div className="h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src={andrewImage} alt="Andrew" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
@@ -299,7 +299,7 @@ const Main = () => {
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
       <h1 className={`font-medium font-custom text-4xl ${kamrynData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Kamryn</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
-        <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
+        <div className="h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src={kamrynImage} alt="Kamryn" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
@@ -315,7 +315,7 @@ const Main = () => {
       </div>
       <div className="md:w-1/4 w-full flex flex-col border-b md:border-r-2 md:border-b-2 border-zinc-500 items-center">
       <h1 className={`font-medium font-custom text-4xl ${jordanData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Jordan</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
-        <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
+        <div className="h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src={jordanImage} alt="Jordan" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
@@ -331,7 +331,7 @@ const Main = () => {
       </div>
       <div className="md:w-1/4 w-full flex flex-col items-center">
       <h1 className={`font-medium font-custom text-4xl ${nickData.status === 'Inside' ? 'text-green-400' : 'text-red-400'}`}>Nick</h1> {/*ternary operator: condition ? expressionIfTrue : expressionIfFalse*/}
-        <div className="w-5/6 h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
+        <div className="h-64 border border-white mt-2 flex items-center justify-center rounded-xl">
           <img src={nickImage} alt="Nick" className="max-w-full max-h-full" />
         </div>
         <div className="w-5/6 h-64 mt-2">
