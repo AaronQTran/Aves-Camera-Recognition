@@ -22,7 +22,7 @@ print(f"Using device: {device}")
 mtcnn = MTCNN(image_size=160, margin=20, keep_all=True, device=device)
 resnet = InceptionResnetV1(pretrained='vggface2').eval().to(device)
 
-cap = cv2.VideoCapture('../KamTestFinal.mp4')
+cap = cv2.VideoCapture(0)
 
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

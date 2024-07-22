@@ -58,7 +58,7 @@ def initialize_database():
             sql = "INSERT INTO roommates (name, status, monday, tuesday, wednesday, thursday, friday, saturday, sunday, lastEnter, lastExit, avgTimeAway, avgTimesLeft, timeStamp, totalTimeAway, check1, check2, timeStart, timeEnd, timeInstances) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s ,%s, %s, %s, %s)"
             val = [
                 ("Andrew", "Inside", 0, 0, 0, 0, 0, 0, 0, "test", "test", "test", 0, "0", 0, 0, 0, 0, 0, 0),
-                ("Kamryn", "Inside", 5, 2, 6, 2, 9, 2, 1, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0, 0),
+                ("Kamryn", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0, 0),
                 ("Jordan", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0, 0),
                 ("Nick", "Inside", 0, 0, 0, 0, 0, 0, 0, "Null", "Null", "Null", 0, "0", 0, 0, 0, 0, 0, 0)
             ]
