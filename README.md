@@ -136,7 +136,7 @@ Please read [CONTRIBUTING.md](https://github.com/AaronQTran/Aves-Camera-Recognit
 
 * **Kamryn Hoffman** 
 * **Aaron Tran** 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* See also the list of [contributors](https://github.com/AaronQTran/Aves-Camera-Recognition/graphs/contributors) who participated in this project.
 
 ## Acknowledgments
 
