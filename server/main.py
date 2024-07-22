@@ -298,79 +298,85 @@ def video_processing():
                                 time.sleep(12)
 
                 if (AvesUser["check1"] == 1 and AvesUser["check2"] == 1):
-                        # Calculate Epoch Time Difference
-                        timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
+                    # Calculate Epoch Time Difference
+                    timeDiff = AvesUser["timeEnd"] - AvesUser["timeStart"]
 
-                        # Add That Difference to totalTimeAway
-                        # 1. Pull Current Total
-                        # 2. Add timeDiff to that Total
-                        # 3. Update
-                        currentDiff = AvesUser["totalTimeAway"]
-                        diff = timeDiff + currentDiff
+                    # Add That Difference to totalTimeAway
+                    # 1. Pull Current Total
+                    # 2. Add timeDiff to that Total
+                    # 3. Update
+                    currentDiff = AvesUser["totalTimeAway"]
+                    diff = timeDiff + currentDiff
 
-                        sql = "UPDATE roommates SET totalTimeAway =%s WHERE name = %s"
-                        val = (diff, body_face)
-                        AvesCur.execute(sql, val)
-                        AvesDB.commit()
-                        # =================================================================== #
+                    sql = "UPDATE roommates SET totalTimeAway = %s WHERE name = %s"
+                    val = (diff, body_face)
+                    AvesCur.execute(sql, val)
+                    AvesDB.commit()
+                    # =================================================================== #
 
-                        # Increment Instances for Dividend Now
-                        instances = AvesUser["timeInstances"]
-                        instances = instances + 1
+                    # Increment Instances for Dividend Now
+                    instances = AvesUser["timeInstances"]
+                    instances = instances + 1
 
-                        # Update Time Instances
-                        sql = "UPDATE roommates SET timeInstances =%s WHERE name = %s"
-                        val = (instances, body_face)
-                        AvesCur.execute(sql, val)
-                        AvesDB.commit()
+                    # Update Time Instances
+                    sql = "UPDATE roommates SET timeInstances =%s WHERE name = %s"
+                    val = (instances, body_face)
+                    AvesCur.execute(sql, val)
+                    AvesDB.commit()
 
-                        # =================================================================== #
+                    # =================================================================== #
 
-                        # Calcualte Mean Epoch
-                        epochTotal = AvesUser["totalTimeAway"]
-                        dividend = AvesUser["timeInstances"]
+                    # Re-fetch Updated Values
+                    AvesUser = get_statistics(body_face.title())
 
-                        if (dividend == 0):
-                            dividend = 1
-                            meanEpoch = epochTotal/dividend
-                        else:
-                            meanEpoch = epochTotal/dividend
+                    # Calcualte Mean Epoch
+                    epochTotal = AvesUser["totalTimeAway"]
+                    dividend = AvesUser["timeInstances"]
 
-                        # Now Input Mean Epoch into Conversion
-                        hours, remainder = divmod(meanEpoch, 3600)
-                        minutes = remainder // 60
+                    # Divide by Zero Error Check
+                    # -for Initial DB Instances
+                    if (dividend == 0):
+                        meanEpoch = epochTotal/1
+                    else:
+                        meanEpoch = epochTotal/dividend
 
-                        if hours == 0:
-                            formattedTime = f"{int(minutes)}m"
-                        else:
-                            formattedTime = f"{int(hours):02}h {int(minutes):02}m"
+                    # Now Input Mean Epoch into Conversion
+                    hours, remainder = divmod(meanEpoch, 3600)
+                    minutes = remainder // 60
 
-                            sql = "UPDATE roommates SET avgTimeAway =%s WHERE name = %s"
-                            val = (formattedTime, body_face)
-                            AvesCur.execute(sql, val)
-                            AvesDB.commit()
+                    if hours == 0:
+                        formattedTime = f"{int(minutes)}m"
+                    else:
+                        formattedTime = f"{int(hours):02}h {int(minutes):02}m"
 
-                            # Reset Check1 & Check2
-                            sql = "UPDATE roommates SET check1 =%s WHERE name = %s"
-                            val = (0, body_face)
-                            AvesCur.execute(sql, val)
-                            AvesDB.commit()
+                    print(formattedTime)
+
+                    sql = "UPDATE roommates SET avgTimeAway =%s WHERE name = %s"
+                    val = (formattedTime, body_face)
+                    AvesCur.execute(sql, val)
+                    AvesDB.commit()
+
+                    # Reset Check1 & Check2
+                    sql = "UPDATE roommates SET check1 =%s WHERE name = %s"
+                    val = (0, body_face)
+                    AvesCur.execute(sql, val)
+                    AvesDB.commit()
                             
-                            sql = "UPDATE roommates SET check2 =%s WHERE name = %s"
-                            val = (0, body_face)
-                            AvesCur.execute(sql, val)
-                            AvesDB.commit()
+                    sql = "UPDATE roommates SET check2 =%s WHERE name = %s"
+                    val = (0, body_face)
+                    AvesCur.execute(sql, val)
+                    AvesDB.commit()
 
-                            # Reset timeStart and timeEnd
-                            sql = "UPDATE roommates SET timeStart = %s WHERE name = %s"
-                            val = (0, body_face)
-                            AvesCur.execute(sql, val)
-                            AvesDB.commit()
+                    # Reset timeStart and timeEnd
+                    sql = "UPDATE roommates SET timeStart = %s WHERE name = %s"
+                    val = (0, body_face)
+                    AvesCur.execute(sql, val)
+                    AvesDB.commit()
                             
-                            sql = "UPDATE roommates SET timeEnd =%s WHERE name = %s"
-                            val = (0, body_face)
-                            AvesCur.execute(sql, val)
-                            AvesDB.commit()
+                    sql = "UPDATE roommates SET timeEnd =%s WHERE name = %s"
+                    val = (0, body_face)
+                    AvesCur.execute(sql, val)
+                    AvesDB.commit()
 
         # Running Every Frame
         # Check if Time is Midnight on a Sunday
