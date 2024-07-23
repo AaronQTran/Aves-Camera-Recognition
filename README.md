@@ -1,6 +1,6 @@
-# Project Title
+# Aves-Camera-Recognition
 
-Aves-Camera_Recognition: AI-based attendance system to automatically keep attendance of employees and residents based on face/body tracking and 3D positioning. Features a front-end react.js based website to manually change employee attendance data and displays employee 
+Aves-Camera-Recognition: AI-based attendance system to automatically keep attendance of employees and residents based on face/body tracking and 3D positioning. Features a front-end react.js based website to manually change employee attendance data and displays employee 
 attendnace metrics. 
 
 ## Getting Started
