@@ -147,4 +147,4 @@ Please read [CONTRIBUTING.md](https://github.com/AaronQTran/Aves-Camera-Recognit
 
 * Kamryn Hoffman - (https://github.com/KamrynH-CS), (https://www.linkedin.com/in/kamryn-hoffman-75778929a/)
 * Aaron Tran - (https://github.com/AaronQTran), (https://www.linkedin.com/in/aarontran4/)
-* Inspiration - Kamryn and I were tired of having to manually mark our attendance on a computer or on a clipboard everyday at the various places we worked at so we wanted to fix this issue by making attendance keeping easier for the employer and employee. 
+* Inspiration - Kamryn and I were tired of having to manually mark our attendance on a computer or clipboard everyday at the various places we worked at so we wanted to fix this issue by making attendance tracking easier for the employer and employee. 
